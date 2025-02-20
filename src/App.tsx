@@ -1,15 +1,14 @@
-import './App.css'
+import "./App.css";
+import Navbar from "./components/Navbar.tsx";
+import Home from "./pages/Home.tsx";
 
 function App() {
-
-
   return (
     <>
-      <nav className="bg-red-500">
-        Hello World
-      </nav>
+      <Navbar />
+      <Home />
     </>
-  )
+  );
 }
 
-export default App
+export default App;
