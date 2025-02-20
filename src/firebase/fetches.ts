@@ -1,28 +1,27 @@
 import { initializeApp } from "firebase/app";
 import {
   getFirestore,
-  collection,
   doc,
   getDoc,
   setDoc,
-  updateDoc,
-  deleteDoc,
-  getDocs,
 } from "firebase/firestore";
 import {
   getStorage,
-  ref,
-  uploadBytes,
-  getDownloadURL,
-  deleteObject,
+
 } from "firebase/storage";
 import {
   User,
-  CartItem,
   Product,
   Category,
   Order,
-  OrderItem,
+  Filter,
+  Payment,
+  Review,
+  Wishlist,
+  Shipping,
+  Points,
+  Coupon,
+  Cart,
 } from "../types/types";
 
 const firebaseConfig = {
@@ -41,73 +40,134 @@ const storage = getStorage(app);
 
 /** Firestore CRUD Operations **/
 
-// Fetch a document
-async function getDocument<T>(collectionName: string, id: string): Promise<T | null> {
-  const docRef = doc(db, collectionName, id);
-  const docSnap = await getDoc(docRef);
-  return docSnap.exists() ? (docSnap.data() as T) : null;
-}
+// Get User by ID
+export const getUserById = async (userId: string): Promise<User | undefined> => {
+  const userDoc = await getDoc(doc(db, "users", userId));
+  return userDoc.exists() ? (userDoc.data() as User) : undefined;
+};
 
-// Create or update a document
-async function setDocument<T>(collectionName: string, id: string, data: T): Promise<void> {
-  await setDoc(doc(db, collectionName, id), data);
-}
+// Get Product by ID
+export const getProductById = async (productId: string): Promise<Product | undefined> => {
+  const productDoc = await getDoc(doc(db, "products", productId));
+  return productDoc.exists() ? (productDoc.data() as Product) : undefined;
+};
 
-// Update a document partially
-async function updateDocument(collectionName: string, id: string, data: Partial<any>): Promise<void> {
-  const docRef = doc(db, collectionName, id);
-  await updateDoc(docRef, data);
-}
+// Get Category by ID
+export const getCategoryById = async (categoryId: string): Promise<Category | undefined> => {
+  const categoryDoc = await getDoc(doc(db, "categories", categoryId));
+  return categoryDoc.exists() ? (categoryDoc.data() as Category) : undefined;
+};
 
-// Delete a document
-async function deleteDocument(collectionName: string, id: string): Promise<void> {
-  await deleteDoc(doc(db, collectionName, id));
-}
+// Get Order by ID
+export const getOrderById = async (orderId: string): Promise<Order | undefined> => {
+  const orderDoc = await getDoc(doc(db, "orders", orderId));
+  return orderDoc.exists() ? (orderDoc.data() as Order) : undefined;
+};
 
-// Fetch all documents in a collection
-async function getAllDocuments<T>(collectionName: string): Promise<T[]> {
-  const querySnapshot = await getDocs(collection(db, collectionName));
-  return querySnapshot.docs.map((doc) => doc.data() as T);
-}
+// Get Payment by ID
+export const getPaymentById = async (paymentId: string): Promise<Payment | undefined> => {
+  const paymentDoc = await getDoc(doc(db, "payments", paymentId));
+  return paymentDoc.exists() ? (paymentDoc.data() as Payment) : undefined;
+};
 
-/** Firebase Storage **/
+// Get Review by ID
+export const getReviewById = async (reviewId: string): Promise<Review | undefined> => {
+  const reviewDoc = await getDoc(doc(db, "reviews", reviewId));
+  return reviewDoc.exists() ? (reviewDoc.data() as Review) : undefined;
+};
 
-// Upload image
-async function uploadImage(file: File, path: string): Promise<string> {
-  const storageRef = ref(storage, path);
-  await uploadBytes(storageRef, file);
-  return getDownloadURL(storageRef);
-}
+// Get Wishlist by ID
+export const getWishlistById = async (wishlistId: string): Promise<Wishlist | undefined> => {
+  const wishlistDoc = await getDoc(doc(db, "wishlists", wishlistId));
+  return wishlistDoc.exists() ? (wishlistDoc.data() as Wishlist) : undefined;
+};
 
-// Delete image
-async function deleteImage(path: string): Promise<void> {
-  const storageRef = ref(storage, path);
-  await deleteObject(storageRef);
-}
+// Get Shipping by ID
+export const getShippingById = async (shippingId: string): Promise<Shipping | undefined> => {
+  const shippingDoc = await getDoc(doc(db, "shippings", shippingId));
+  return shippingDoc.exists() ? (shippingDoc.data() as Shipping) : undefined;
+};
 
-/** Specific Fetch Functions for Each Interface **/
-export const getUser = (id: string) => getDocument<User>("users", id);
-export const setUser = (id: string, data: User) => setDocument("users", id, data);
-export const updateUser = (id: string, data: Partial<User>) => updateDocument("users", id, data);
-export const deleteUser = (id: string) => deleteDocument("users", id);
+// Get Coupon by ID
+export const getCouponById = async (couponId: string): Promise<Coupon | undefined> => {
+  const couponDoc = await getDoc(doc(db, "coupons", couponId));
+  return couponDoc.exists() ? (couponDoc.data() as Coupon) : undefined;
+};
 
-export const getProduct = (id: string) => getDocument<Product>("products", id);
-export const setProduct = (id: string, data: Product) => setDocument("products", id, data);
-export const updateProduct = (id: string, data: Partial<Product>) => updateDocument("products", id, data);
-export const deleteProduct = (id: string) => deleteDocument("products", id);
+// Get Cart by ID
+export const getCartById = async (cartId: string): Promise<Cart | undefined> => {
+  const cartDoc = await getDoc(doc(db, "carts", cartId));
+  return cartDoc.exists() ? (cartDoc.data() as Cart) : undefined;
+};
 
-export const getCategory = (id: string) => getDocument<Category>("categories", id);
-export const setCategory = (id: string, data: Category) => setDocument("categories", id, data);
-export const updateCategory = (id: string, data: Partial<Category>) => updateDocument("categories", id, data);
-export const deleteCategory = (id: string) => deleteDocument("categories", id);
+// Get Points by ID
+export const getPointsById = async (pointId: string): Promise<Points | undefined> => {
+  const pointsDoc = await getDoc(doc(db, "points", pointId));
+  return pointsDoc.exists() ? (pointsDoc.data() as Points) : undefined;
+};
 
-export const getOrder = (id: string) => getDocument<Order>("orders", id);
-export const setOrder = (id: string, data: Order) => setDocument("orders", id, data);
-export const updateOrder = (id: string, data: Partial<Order>) => updateDocument("orders", id, data);
-export const deleteOrder = (id: string) => deleteDocument("orders", id);
+// Get Filter by ID
+export const getFilterById = async (filterId: string): Promise<Filter | undefined> => {
+  const filterDoc = await getDoc(doc(db, "filters", filterId));
+  return filterDoc.exists() ? (filterDoc.data() as Filter) : undefined;
+};
 
-/** Firebase REST API Alternative **/
-// Instead of Firebase SDK, you can use the REST API like this:
-// Example GET request: fetch(`https://firestore.googleapis.com/v1/projects/YOUR_PROJECT_ID/databases/(default)/documents/users/${id}`)
+// Set User
+export const setUser = async (user: User): Promise<void> => {
+  await setDoc(doc(db, "users", user.userId), user);
+};
 
-export { uploadImage, deleteImage, getAllDocuments }
+// Set Product
+export const setProduct = async (product: Product): Promise<void> => {
+  await setDoc(doc(db, "products", product.productId), product);
+};
+
+// Set Category
+export const setCategory = async (category: Category): Promise<void> => {
+  await setDoc(doc(db, "categories", category.categoryId), category);
+};
+
+// Set Order
+export const setOrder = async (order: Order): Promise<void> => {
+  await setDoc(doc(db, "orders", order.orderId), order);
+};
+
+// Set Payment
+export const setPayment = async (payment: Payment): Promise<void> => {
+  await setDoc(doc(db, "payments", payment.paymentId), payment);
+};
+
+// Set Review
+export const setReview = async (review: Review): Promise<void> => {
+  await setDoc(doc(db, "reviews", review.reviewId), review);
+};
+
+// Set Wishlist
+export const setWishlist = async (wishlist: Wishlist): Promise<void> => {
+  await setDoc(doc(db, "wishlists", wishlist.wishlistId), wishlist);
+};
+
+// Set Shipping
+export const setShipping = async (shipping: Shipping): Promise<void> => {
+  await setDoc(doc(db, "shippings", shipping.shippingId), shipping);
+};
+
+// Set Coupon
+export const setCoupon = async (coupon: Coupon): Promise<void> => {
+  await setDoc(doc(db, "coupons", coupon.couponId), coupon);
+};
+
+// Set Cart
+export const setCart = async (cart: Cart): Promise<void> => {
+  await setDoc(doc(db, "carts", cart.cartId), cart);
+};
+
+// Set Points
+export const setPoints = async (points: Points): Promise<void> => {
+  await setDoc(doc(db, "points", points.pointId), points);
+};
+
+// Set Filter
+export const setFilter = async (filter: Filter): Promise<void> => {
+  await setDoc(doc(db, "filters", filter.filterId), filter);
+};
