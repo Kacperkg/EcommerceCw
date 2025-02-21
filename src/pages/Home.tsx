@@ -207,9 +207,9 @@ const RoomCard = ({ index, Room, Images, rotate, setHoveredImage }: RoomCardProp
         setHoveredImage(null);
       }}
     >
-      <div className="flex gap-[24px] text-2xl text-(--secondary)">
-        <h2 style={{ fontSize: isHovered ? "48px" : "24px", transition: "font-size 0.3s ease-in-out" }}>{index}</h2>
-        <h2 style={{ fontSize: isHovered ? "48px" : "24px", transition: "font-size 0.3s ease-in-out" }}>{Room}</h2>
+      <div className="flex gap-[24px] text-2xl">
+        <h2 style={{ fontSize: isHovered ? "48px" : "24px", transition: "font-size 0.3s ease-in-out", color: isHovered ? 'var(--primary)' : 'var(--secondary)' }}>{index}</h2>
+        <h2 style={{ fontSize: isHovered ? "48px" : "24px", transition: "font-size 0.3s ease-in-out", color: isHovered ? 'var(--primary)' : 'var(--secondary)'  }}>{Room}</h2>
       </div>
       <svg
         style={{
