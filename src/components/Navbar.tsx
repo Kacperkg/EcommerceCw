@@ -1,6 +1,6 @@
 export default function Navbar() {
   return (
-    <nav className="bg-[#F2F2F2] rounded-3xl px-[32px] py-[16px] flex items-center justify-between text-(--secondary)">
+    <nav className="bg-(--bg2) rounded-3xl px-[32px] py-[16px] flex items-center justify-between text-(--secondary)">
       <ul className="flex gap-16 text-xl items-center">
         <li>
           <a href="">Home</a>

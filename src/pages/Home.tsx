@@ -139,7 +139,7 @@ const Perks = () => {
 
 const PerksCard = ({ svg, title, desc }: PerksCardProps) => {
   return (
-    <div className="flex flex-col items-center justify-center gap-[12px] bg-(--bg) p-[32px] rounded-3xl max-w-[428px] flex-auto aspect-square">
+    <div className="flex flex-col items-center justify-center gap-[12px] bg-(--bg2) p-[32px] rounded-3xl max-w-[428px] flex-auto aspect-square">
       {svg}
       <div className="flex flex-col gap-[8px]">
         <h3 className="text-4xl">{title}</h3>
