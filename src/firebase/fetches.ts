@@ -22,7 +22,7 @@ import {
   Points,
   Coupon,
   Cart,
-} from "../types/types";
+} from "../types/DatabaseTypes";
 
 const firebaseConfig = {
   apiKey: "AIzaSyB50dBZcPhp1WqNxzshrJlIdB6UHw3DZao",

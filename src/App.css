@@ -4,8 +4,20 @@
   --primary: #000;
   --secondary: rgba(0, 0, 0, 0.70);
   --black10:rgba(0, 0, 0, 0.10);
+  --black50:rgba(0, 0, 0, 0.50);
   --white70: rgba(255, 255, 255, 0.70);
   --bg:#F2F2F2;
+}
+
+@font-face {
+  font-family: 'Alexandria Regular';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Alexandria Regular'), url('./style/Alexandria[wght].woff') format('woff');
+  }
+
+body {
+  font-family: 'Alexandria Regular', sans-serif;
 }
 
 #root {
@@ -16,5 +28,3 @@
   box-sizing: border-box;
 
 }
-
-@import url('https://fonts.googleapis.com/css2?family=Alexandria:wght@100..900&display=swap');
