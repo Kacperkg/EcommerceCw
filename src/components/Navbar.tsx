@@ -2,14 +2,14 @@ export default function Navbar() {
   return (
     <nav className="bg-(--bg2) rounded-3xl px-[32px] py-[16px] flex items-center justify-between text-(--secondary)">
       <ul className="flex gap-16 text-xl items-center">
-        <li>
-          <a href="">Home</a>
+        <li className="relative">
+          <a href="" className="active_underline">Home</a>
         </li>
-        <li>
-          <a href="">Shop</a>
+        <li className="relative">
+          <a href="" className="active_underline">Shop</a>
         </li>
-        <li>
-          <a href="">About</a>
+        <li className="relative">
+          <a href="" className="active_underline">About</a>
         </li>
       </ul>
       <ul className="flex gap-16 items-center">
