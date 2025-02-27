@@ -10,6 +10,7 @@ import Discover5 from "../assets/home/discover/discover5.avif";
 import Discover6 from "../assets/home/discover/discover6.jpg";
 import { DiscoverImageProp } from "../types/Home";
 import { easeInOut, motion } from "framer-motion";
+import { useState } from "react";
 
 const Home = () => {
   return (
@@ -172,13 +173,26 @@ const Categories = () => {
     "Stools and more",
   ];
 
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+
   return (
     <section className="mt-[256px] text-left">
       <h3 className="text-base pb-[12px]">OUR CATEGORIES</h3>
       <div className="flex text-5xl max-w-[50dvw] flex-wrap">
-        {Categories.map((category, index) => (
-          <div key={index}>{category.replace(/ /g, "\u00A0")}</div>
-        ))}
+      {Categories.map((category, index) => (
+        <div
+          key={index}
+          onMouseEnter={() => setHoveredIndex(index)}
+          onMouseLeave={() => setHoveredIndex(null)}
+          className={`transition-colors duration-300 cursor-default ${
+            hoveredIndex === null || hoveredIndex === index
+              ? "text-black"
+              : "text-(--black20)"
+          }`}
+        >
+          {category.replace(/ /g, "\u00A0")}
+        </div>
+      ))}
       </div>
       <div>
         TODO
