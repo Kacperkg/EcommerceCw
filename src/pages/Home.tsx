@@ -174,7 +174,7 @@ const Categories = () => {
 
   return (
     <section className="mt-[256px] text-left">
-      <h3 className="text-xl pb-[12px]">OUR CATEGORIES</h3>
+      <h3 className="text-base pb-[12px]">OUR CATEGORIES</h3>
       <div className="flex text-5xl max-w-[50dvw] flex-wrap">
         {Categories.map((category, index) => (
           <div key={index}>{category.replace(/ /g, "\u00A0")}</div>
