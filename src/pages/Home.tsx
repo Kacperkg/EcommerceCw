@@ -32,6 +32,7 @@ const Home = () => {
   );
 };
 
+//TODO CHANGE THIS HERO TO A SLIDESHOW WITH PRODUCTS
 const Hero = () => {
   return (
     <div
@@ -49,7 +50,7 @@ const Hero = () => {
 
 const AboutUs = () => {
   return (
-    <section className="flex flex-col gap-[32px] mt-[128px]">
+    <section className="flex flex-col gap-[32px] mt-[256px]">
       <h2 className="text-5xl text-start font-[400]">
         Essence - Inspired by Nature, Designed for Modern Living, Crafted to
         Elevate Your Space
@@ -61,7 +62,7 @@ const AboutUs = () => {
 
 const Discover = () => {
   return (
-    <section className="grid grid-cols-4 gap-[12px] justify-between mt-[128px]">
+    <section className="grid grid-cols-4 gap-[12px] justify-between mt-[256px]">
       <DiscoverImageMain image={Discover1} />
       <div className="col-span-2 row-span 2 text-right uppercase text-2xl">
         <h3>Discover our</h3>
@@ -92,11 +93,11 @@ const DiscoverImageMain = ({ image }: DiscoverImageProp) => {
         style={{
           backgroundImage: `url(${image})`,
           backgroundSize: "cover",
-          backgroundPosition: 'bottom',
-        aspectRatio: "1/.8",
+          backgroundPosition: "bottom",
+          aspectRatio: "1/.8",
         }}
         variants={{
-          initial: { scale: 1.05 }, 
+          initial: { scale: 1.05 },
           hoveredCard: {
             scale: 1,
             transition: { ease: "easeInOut", duration: 0.2 },
@@ -104,7 +105,7 @@ const DiscoverImageMain = ({ image }: DiscoverImageProp) => {
         }}
       />
       <motion.div
-        className="flex items-center justify-between px-[16px] py-[16px] text-xl bg-white border border-(--black20) absolute w-full bottom-0"
+        className="flex items-center justify-between px-[16px] py-[16px] text-xl bg-white border border-(--black20) absolute w-full bottom-0 uppercase"
         variants={{
           initial: {
             y: "100%",
@@ -135,7 +136,7 @@ const DiscoverImage = ({ image }: DiscoverImageProp) => {
           backgroundImage: `url(${image})`,
         }}
         variants={{
-          initial: { scale: 1.05 }, 
+          initial: { scale: 1.05 },
           hoveredCard: {
             scale: 1,
             transition: { ease: "easeInOut", duration: 0.2 },
@@ -143,7 +144,7 @@ const DiscoverImage = ({ image }: DiscoverImageProp) => {
         }}
       />
       <motion.div
-        className="flex items-center justify-between px-[16px] py-[16px] text-xl bg-white border border-(--black20) absolute w-full bottom-0"
+        className="flex items-center justify-between px-[16px] py-[16px] text-xl bg-white border border-(--black20) absolute w-full bottom-0 uppercase"
         variants={{
           initial: {
             y: "100%",
@@ -162,7 +163,28 @@ const DiscoverImage = ({ image }: DiscoverImageProp) => {
 };
 
 const Categories = () => {
-  return <section></section>;
+  const Categories = [
+    "Sofas, ",
+    "Chairs, ",
+    "Desks, ",
+    "Benches, ",
+    "Dining Tables, ",
+    "Stools and more",
+  ];
+
+  return (
+    <section className="mt-[256px] text-left">
+      <h3 className="text-xl pb-[12px]">OUR CATEGORIES</h3>
+      <div className="flex text-5xl max-w-[50dvw] flex-wrap">
+        {Categories.map((category, index) => (
+          <div key={index}>{category.replace(/ /g, "\u00A0")}</div>
+        ))}
+      </div>
+      <div>
+
+      </div>
+    </section>
+  );
 };
 
 export default Home;
