@@ -181,7 +181,7 @@ const Categories = () => {
         ))}
       </div>
       <div>
-
+        TODO
       </div>
     </section>
   );
