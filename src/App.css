@@ -74,11 +74,3 @@ body {
   transition: all 300ms ease-in-out;
 }
 
-.DiscoverImg {
-  aspect-ratio: 1;
-}
-
-.DiscoverImgMain {
-  aspect-ratio: 1/.8;
-  background-size:cover ;
-}
