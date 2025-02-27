@@ -1,9 +1,7 @@
 import { motion } from "framer-motion";
 import { MainButtonProp } from "../types/Universal";
-import { useState } from "react";
 
 export const MainButton = ({ name }: MainButtonProp) => {
-  const [bottomMargin, setBottomMargin] = useState(false);
 
   return (
     <motion.a
