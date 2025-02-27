@@ -4,6 +4,7 @@
   --primary: #000;
   --secondary: rgba(0, 0, 0, 0.70);
   --black10:rgba(0, 0, 0, 0.10);
+  --black20:rgba(0, 0, 0, 0.20);
   --black50:rgba(0, 0, 0, 0.50);
   --white70: rgba(255, 255, 255, 0.70);
   --bg:#F2F2F2;
@@ -11,20 +12,47 @@
 }
 
 @font-face {
-  font-family: 'Alexandria Regular';
-  font-style: normal;
+  font-family: 'BwGradual';
+  src: url('./style/fonts/BwGradualDEMO-Regular.woff2') format('woff2');
   font-weight: normal;
-  src: local('Alexandria Regular'), url('./style/Alexandria[wght].woff') format('woff');
-  }
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'BwGradual';
+  src: url('./style/fonts/BwGradualDEMO-Bold.woff2') format('woff2');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'BwGradual';
+  src: url('./style/fonts/BwGradualDEMO-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'BwGradual';
+  src: url('./style/fonts/BwGradualDEMO-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'BwGradual';
+  src: url('./style/fonts/BwGradualDEMO-ExtraBold.woff2') format('woff2');
+  font-weight: 800;
+  font-style: normal;
+}
 
 body {
-  font-family: 'Alexandria Regular', sans-serif;
+  font-family: 'BwGradual', sans-serif;
 }
 
 #root {
-  max-width: 1280px;
+  /* max-width: 1280px; */
   margin: 0 auto;
-  padding: 2rem;
   text-align: center;
   box-sizing: border-box;
 
@@ -38,10 +66,19 @@ body {
   width: 0;
   height: 1px;
   background-color: var(--primary);
-  bottom: 0;
+  bottom: -2px;
 }
 
 .active_underline:hover::after {
   width: 100%;
   transition: all 300ms ease-in-out;
+}
+
+.DiscoverImg {
+  aspect-ratio: 1;
+}
+
+.DiscoverImgMain {
+  aspect-ratio: 1/.8;
+  background-size:cover ;
 }

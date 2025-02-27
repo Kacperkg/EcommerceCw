@@ -11,3 +11,7 @@ export interface RoomCardProps {
   Room: string;
   Images: string;
 }
+
+export interface DiscoverImageProp {
+  image: string;
+}

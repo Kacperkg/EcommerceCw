@@ -1,18 +1,18 @@
 export default function Navbar() {
   return (
-    <nav className="bg-(--bg2) rounded-3xl px-[32px] py-[16px] flex items-center justify-between text-(--secondary)">
-      <ul className="flex gap-16 text-xl items-center">
+    <nav className="bg-white px-[32px] py-[16px] flex items-center justify-between text-(--secondary) max-w-[1440px] m-auto">
+      <ul className="flex gap-8 text-xl items-center">
         <li className="relative">
           <a href="" className="active_underline">Home</a>
         </li>
         <li className="relative">
-          <a href="" className="active_underline">Shop</a>
+          <a href="" className="active_underline">Explore</a>
         </li>
         <li className="relative">
           <a href="" className="active_underline">About</a>
         </li>
       </ul>
-      <ul className="flex gap-16 items-center">
+      <ul className="flex gap-8 items-center">
         <li>
           <a href="">
             <svg
