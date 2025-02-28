@@ -9,6 +9,7 @@
   --white70: rgba(255, 255, 255, 0.70);
   --bg:#F2F2F2;
   --bg2: #FFF2D7;
+  --bg3: #f6f1eb;
 }
 
 @font-face {
@@ -48,6 +49,7 @@
 
 body {
   font-family: 'BwGradual', sans-serif;
+  background-color: var(--bg3);
 }
 
 #root {
