@@ -82,12 +82,29 @@ const Hero = () => {
           <motion.div
             key={index}
             className="absolute left-[32px] bottom-[32px] text-white p-4 rounded-lg text-left gap-[16px] flex flex-col text-nowrap"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0 }}
           >
-            <h3 className="text-2xl font-light">{slides[index].category}</h3>
-            <h1 className="text-9xl">{slides[index].productName}</h1>
+            <div className="relative w-fit text-2xl overflow-hidden">
+              <motion.h3
+                className="absolute"
+                initial={{ opacity: 0, y: "-100%" }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.5 }}
+              >
+                {slides[index].category}
+              </motion.h3>
+              <span className="opacity-0">{slides[index].category}</span>
+            </div>
+            <div className="relative w-fit h-fit text-9xl overflow-hidden pb-[16px]">
+              <motion.h1
+                className="absolute"
+                initial={{ opacity: 0, y: '100%' }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0 }}
+              >
+                {slides[index].productName}
+              </motion.h1>
+              <span className="opacity-0">{slides[index].productName}</span>
+            </div>
           </motion.div>
         </motion.div>
       </AnimatePresence>
