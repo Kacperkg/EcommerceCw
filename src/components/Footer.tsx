@@ -19,7 +19,10 @@ export default function Footer() {
           <h2><StaggerButton href='#'>Contact</StaggerButton></h2>
         </div>
       </div>
-      <h1 className="text-[256px]">Essence</h1>
+      <h1 className="text-[256px] leading-[256px] mt-[calc(256px-1em)]">
+  Essence
+</h1>
+
     </section>
   );
 }
