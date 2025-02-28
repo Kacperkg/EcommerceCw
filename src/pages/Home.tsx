@@ -1,4 +1,6 @@
-import heroImage from "../assets/home/hero.jpg";
+import sofaHero from "../assets/home/sofaHero.jpg";
+import heroImage2 from "../assets/home/living-room.jpg";
+import heroImage3 from "../assets/home/kitchen.jpg";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { MainButton } from "../components/MainButton";
@@ -9,8 +11,14 @@ import Discover4 from "../assets/home/discover/discover4.jpg";
 import Discover5 from "../assets/home/discover/discover5.avif";
 import Discover6 from "../assets/home/discover/discover6.jpg";
 import { DiscoverImageProp } from "../types/Home";
-import { easeInOut, motion } from "framer-motion";
-import { useState } from "react";
+import { AnimatePresence, easeInOut, motion } from "framer-motion";
+import { useEffect, useState } from "react";
+
+const slides = [
+  { image: sofaHero, category: "Sofa", productName: "Sofa" },
+  { image: heroImage2, category: "Living Room", productName: "Living Room" },
+  { image: heroImage3, category: "Kitchen", productName: "Kitchen" },
+];
 
 const Home = () => {
   return (
@@ -18,8 +26,10 @@ const Home = () => {
       <div className="relative h-[100dvh]">
         <div className="absolute z-[99] inset-0 m-auto top-[32px]">
           <Navbar />
+          <div className="max-w-[1440px] m-auto border-l border-r border-b">
+            <Hero />
+          </div>
         </div>
-        <Hero />
       </div>
       <section className="max-w-[1440px] m-auto">
         <div>
@@ -35,16 +45,52 @@ const Home = () => {
 
 //TODO CHANGE THIS HERO TO A SLIDESHOW WITH PRODUCTS
 const Hero = () => {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIndex((prevIndex) => (prevIndex + 1) % slides.length);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <div
-      className="relative bg-center bg-cover h-[100dvh] before:absolute before:top-0 before:left-0 before:right-0 before:bottom-0 before:bg-(--black20) px-[32px] py-[16px] text-start"
-      style={{ backgroundImage: `url(${heroImage})` }}
-    >
-      <div className="m-auto max-w-[1440px] mt-[35dvh]">
-        <h1 className="relative z-10 text-(--white70) text-8xl font-bold max-w-[15ch]">
-          FURNITURE FOR NOW OR FOREVER
-        </h1>
-      </div>
+    <div className="relative h-[90dvh] w-full overflow-hidden">
+      <div
+        className="absolute inset-0 bg-cover bg-center bg-fixed"
+        style={{
+          backgroundImage: `url(${
+            slides[(index + 1) % slides.length]?.image || slides[0].image
+          })`,
+        }}
+      />
+
+      <AnimatePresence>
+        <motion.div
+          key={index}
+          className="absolute inset-0 overflow-hidden"
+          initial={{ width: "100%" }}
+          animate={{ width: "0%" }}
+          exit={{ width: "0%" }}
+          transition={{ ease: "easeInOut", duration: 0.5, delay: 4 }}
+        >
+          <div
+            className="absolute inset-0 bg-cover bg-center bg-fixed"
+            style={{ backgroundImage: `url(${slides[index].image})` }}
+          />
+          <motion.div
+            key={index}
+            className="absolute left-[32px] bottom-[32px] text-white p-4 rounded-lg text-left gap-[16px] flex flex-col text-nowrap"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0 }}
+          >
+            <h3 className="text-2xl font-light">{slides[index].category}</h3>
+            <h1 className="text-9xl">{slides[index].productName}</h1>
+          </motion.div>
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 };
@@ -179,24 +225,22 @@ const Categories = () => {
     <section className="mt-[256px] text-left">
       <h3 className="text-base pb-[12px]">OUR CATEGORIES</h3>
       <div className="flex text-5xl max-w-[50dvw] flex-wrap">
-      {Categories.map((category, index) => (
-        <div
-          key={index}
-          onMouseEnter={() => setHoveredIndex(index)}
-          onMouseLeave={() => setHoveredIndex(null)}
-          className={`transition-colors duration-300 cursor-default ${
-            hoveredIndex === null || hoveredIndex === index
-              ? "text-black"
-              : "text-(--black20)"
-          }`}
-        >
-          {category.replace(/ /g, "\u00A0")}
-        </div>
-      ))}
+        {Categories.map((category, index) => (
+          <div
+            key={index}
+            onMouseEnter={() => setHoveredIndex(index)}
+            onMouseLeave={() => setHoveredIndex(null)}
+            className={`transition-colors duration-300 cursor-default ${
+              hoveredIndex === null || hoveredIndex === index
+                ? "text-black"
+                : "text-(--black20)"
+            }`}
+          >
+            {category.replace(/ /g, "\u00A0")}
+          </div>
+        ))}
       </div>
-      <div>
-        TODO
-      </div>
+      <div>TODO</div>
     </section>
   );
 };
