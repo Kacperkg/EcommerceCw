@@ -23,7 +23,7 @@ const AnimatedButton = ({ children, href }) => {
               key={`top-${i}`}
               variants={{
                 initial: { y: 0 },
-                hovered: { y: "-100%" },
+                hovered: { y: "-110%" },
               }}
               transition={{
                 duration: DURATION,
