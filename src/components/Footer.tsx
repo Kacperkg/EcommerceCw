@@ -2,7 +2,7 @@ import StaggerButton from '../components/StaggerButton'
 
 export default function Footer() {
   return (
-    <section className="mt-[256px] max-w-[1440px] text-2xl uppercase">
+    <section className="mt-[256px] max-w-[1440px] text-2xl uppercase m-auto">
       <ul className="flex justify-between pb-[32px]">
         <li><StaggerButton href='#'>Facebook</StaggerButton></li>
         <li><StaggerButton href='#'>Instagram</StaggerButton></li>

@@ -4,9 +4,12 @@ import { MainButtonProp } from "../types/Universal";
 export const MainButton = ({ name }: MainButtonProp) => {
   return (
     <motion.a
-      className="px-[48px] py-[16px] border text-2xl uppercase cursor-pointer max-w-fit flex flex-col relative overflow-hidden"
+      className="px-[48px] py-[16px] border text-2xl uppercase cursor-pointer flex flex-col relative overflow-hidden"
       whileHover="hovered"
       initial="initial"
+      style={{
+        maxWidth: 'fit-content',
+      }}
     >
       <motion.div
         className="absolute px-[48px] py-[16px] left-0 top-0"
