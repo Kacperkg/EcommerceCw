@@ -3,12 +3,22 @@ import Chair from '../assets/Explore/chair.png'
 import Couch from '../assets/Explore/couchs.png'
 import Desk from '../assets/Explore/desk.png'
 import DiningTable from '../assets/Explore/diningtable.png'
+import Navbar from "../components/Navbar"
 
 export default function Explore() {
     return (
-        <section>
-            <Categories/>
-        </section>
+        <>
+            <div className="relative h-[100dvh]">
+                <div className="absolute z-[99] inset-0 m-auto top-[32px]">
+                    <Navbar />
+                    <div className="max-w-[1440px] m-auto border-l border-r border-b">
+                        <section>
+                            <Categories/>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </>
     )
 }
 
