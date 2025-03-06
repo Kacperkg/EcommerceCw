@@ -12,7 +12,7 @@ export default function Explore() {
             <div className="relative h-[100dvh]">
                 <div className="absolute z-[99] inset-0 m-auto top-[32px]">
                     <Navbar />
-                    <div className="max-w-[1440px] m-auto border-l border-r border-b">
+                    <div className="max-w-[1440px] m-auto">
                         <section>
                             <Categories/>
                         </section>
@@ -39,7 +39,7 @@ const Categories = () => {
 
 const CateogriesCard = ({title, img}: CategoriesCardProps) => {
     return (
-        <div className="bg-(--bg) flex justify-between items-center pl-[16px] py-[8px] max-w-[322px] flex-1 rounded-2xl gap-[16px]">
+        <div className="bg-[#ededed] flex justify-between items-center pl-[16px] pr-[16px] py-[8px] max-w-[322px] flex-1 gap-[16px]">
             <div className="flex flex-col justify-between h-[100%] py-8 items-center gap-[8px]">
                 <h3 className="text-xl nowrap">{title}</h3>
                 <button className="bg-white px-4 py-2 rounded-2xl max-w-fit">See More</button>
