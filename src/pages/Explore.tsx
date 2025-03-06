@@ -4,6 +4,7 @@ import Couch from '../assets/Explore/couchs.png'
 import Desk from '../assets/Explore/desk.png'
 import DiningTable from '../assets/Explore/diningtable.png'
 import Navbar from "../components/Navbar"
+import Footer from "../components/Footer"
 
 export default function Explore() {
     return (
@@ -18,6 +19,9 @@ export default function Explore() {
                     </div>
                 </div>
             </div>
+            <section className="max-w-[1440px] m-auto">
+                <Footer />
+            </section>
         </>
     )
 }
