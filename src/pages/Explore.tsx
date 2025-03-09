@@ -24,7 +24,7 @@ export default function Explore() {
                     </div>
                 </div>
             </div>
-            <section className="max-w-[1440px] m-auto">
+            <section className="max-w-[1440px] m-auto pt-[128px]">
                 <Footer />
             </section>
         </>
@@ -70,7 +70,7 @@ const Products = () => {
     }, []);
 
     return (
-        <div className="grid grid-cols-3 gap-6 mt-[128px] px-[32px]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-[128px] px-[32px] pb-[256px]">
             {products.length > 0 ? (
                 products.map((product) => (
                     <ProductCard key={product.productId} product={product} />
@@ -86,8 +86,8 @@ const ProductCard = ({ product }: { product: Product }) => {
     const [isLiked, setIsLiked] = useState(false);
 
     return (
-        <div className="relative group">
-            <div className="aspect-square overflow-hidden rounded-2xl">
+        <div className="relative group max-w-[300px] w-full mx-auto">
+            <div className="aspect-square overflow-hidden">
                 <img 
                     src={product.images[0]}
                     alt={product.name} 
