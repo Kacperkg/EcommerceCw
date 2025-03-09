@@ -89,7 +89,7 @@ const ProductCard = ({ product }: { product: Product }) => {
         <div className="relative group">
             <div className="aspect-square overflow-hidden rounded-2xl">
                 <img 
-                    src={product.images[0]} //TODO fix this
+                    src={product.images[0]}
                     alt={product.name} 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
