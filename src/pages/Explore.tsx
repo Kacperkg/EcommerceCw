@@ -5,6 +5,10 @@ import Desk from '../assets/Explore/desk.png'
 import DiningTable from '../assets/Explore/diningtable.png'
 import Navbar from "../components/Navbar"
 import Footer from "../components/Footer"
+import { useState, useEffect } from "react";
+import { getProductById, getAllProducts } from "../firebase/fetches";
+import { Product } from "../types/DatabaseTypes";
+import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 
 export default function Explore() {
     return (
@@ -15,6 +19,7 @@ export default function Explore() {
                     <div className="max-w-[1440px] m-auto">
                         <section>
                             <Categories/>
+                            <Products />
                         </section>
                     </div>
                 </div>
@@ -48,3 +53,57 @@ const CateogriesCard = ({title, img}: CategoriesCardProps) => {
         </div>
     )
 }
+
+const Products = () => {
+    const [products, setProducts] = useState<Product[]>([]);
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const productsData = await getAllProducts();
+                setProducts(productsData);
+            } catch (error) {
+                console.error("Error fetching products:", error);
+            }
+        };
+        fetchProducts();
+    }, []);
+
+    return (
+        <div className="grid grid-cols-3 gap-6 mt-[128px] px-[32px]">
+            {products.length > 0 ? (
+                products.map((product) => (
+                    <ProductCard key={product.productId} product={product} />
+                ))
+            ) : (
+                <p>Loading products...</p>
+            )}
+        </div>
+    );
+};
+
+const ProductCard = ({ product }: { product: Product }) => {
+    const [isLiked, setIsLiked] = useState(false);
+
+    return (
+        <div className="relative group">
+            <div className="aspect-square overflow-hidden rounded-2xl">
+                <img 
+                    src={product.images[0]} //TODO fix this
+                    alt={product.name} 
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+            </div>
+            <button 
+                onClick={() => setIsLiked(!isLiked)}
+                className="absolute top-4 right-4 p-2 bg-white rounded-full shadow-md"
+            >
+                {isLiked ? <AiFillHeart className="text-red-500" /> : <AiOutlineHeart />}
+            </button>
+            <div className="mt-4 space-y-2">
+                <h3 className="text-lg font-medium">{product.name}</h3>
+                <span className="font-semibold">£{product.cost}</span>
+            </div>
+        </div>
+    );
+};

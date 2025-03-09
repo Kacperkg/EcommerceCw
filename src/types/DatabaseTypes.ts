@@ -22,7 +22,7 @@ export interface User {
     name: string;
     images: string[];
     description: string;
-    price: number;
+    cost: number;
     stock: number;
     categoryId: string;
     addedDate: string;
@@ -125,4 +125,3 @@ export interface User {
     filterType: string;
     filterValue: string;
   }
-  

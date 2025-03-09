@@ -4,6 +4,8 @@ import {
   doc,
   getDoc,
   setDoc,
+  collection,
+  getDocs
 } from "firebase/firestore";
 import {
   getStorage,
@@ -50,6 +52,12 @@ export const getUserById = async (userId: string): Promise<User | undefined> => 
 export const getProductById = async (productId: string): Promise<Product | undefined> => {
   const productDoc = await getDoc(doc(db, "products", productId));
   return productDoc.exists() ? (productDoc.data() as Product) : undefined;
+};
+
+// Get All Products
+export const getAllProducts = async (): Promise<Product[]> => {
+  const querySnapshot = await getDocs(collection(db, "products"));
+  return querySnapshot.docs.map(doc => ({ ...doc.data(), productId: doc.id }) as Product);
 };
 
 // Get Category by ID

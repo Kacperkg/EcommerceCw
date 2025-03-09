@@ -5,11 +5,12 @@ import Home from "./pages/Home.tsx";
 import Explore from "./pages/Explore.tsx";
 import ItemPreview from "./pages/ItemPreview.tsx";
 import { Lenis } from "@studio-freight/react-lenis";
+import { MdExpandMore } from "react-icons/md";
 
 function App() {
   return (
       <Lenis root>
-        <ItemPreview />
+        <Explore />
       </Lenis>
 
   );
