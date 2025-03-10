@@ -27,7 +27,7 @@ export default function Explore() {
                     </div>
                 </div>
             </div>
-            <section className="max-w-[1440px] m-auto pt-[384px]">
+            <section className="max-w-[1440px] m-auto pt-[512px]">
                 <Footer />
             </section>
         </>
@@ -47,10 +47,10 @@ const Categories = () => {
 
 const CateogriesCard = ({title, img}: CategoriesCardProps) => {
     return (
-        <div className="bg-[#ededed] flex justify-between items-center pl-[16px] pr-[16px] py-[8px] max-w-[322px] flex-1 gap-[16px]">
+        <div className="flex justify-between items-center pl-[16px] pr-[16px] py-[8px] max-w-[322px] flex-1 gap-[16px] border border-black">
             <div className="flex flex-col justify-between h-[100%] py-8 items-center gap-[8px]">
-                <h3 className="text-xl nowrap">{title}</h3>
-                <button className="bg-white px-4 py-2 rounded-2xl max-w-fit">See More</button>
+                <h3 className="text-xl nowrap font-semibold">{title}</h3>
+                <button className="px-4 py-2 hover:bg-black hover:text-[#f6f1eb] transition-colors border border-black">See More</button>
             </div>
             <img src={img} alt="" className="max-w-[120px] aspect-square"/>
         </div>
@@ -74,10 +74,10 @@ const SortingSection = ({
                     <button
                         key={category}
                         onClick={() => onCategorySelect(selectedCategory === category ? null : category)}
-                        className={`px-4 py-2 rounded-full ${
+                        className={`px-4 py-2 border border-black ${
                             selectedCategory === category 
-                            ? "bg-black text-white" 
-                            : "bg-[#ededed]"
+                            ? "bg-black text-[#f6f1eb]" 
+                            : "bg"
                         }`}
                     >
                         {category}
