@@ -24,7 +24,7 @@ export interface User {
     description: string;
     cost: number;
     stock: number;
-    categoryId: string;
+    categories: string;
     addedDate: string;
     filters: ProductFilters;
   }

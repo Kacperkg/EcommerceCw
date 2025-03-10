@@ -11,6 +11,8 @@ import { Product } from "../types/DatabaseTypes";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 
 export default function Explore() {
+    const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
     return (
         <>
             <div className="relative h-[100dvh]">
@@ -19,12 +21,13 @@ export default function Explore() {
                     <div className="max-w-[1440px] m-auto">
                         <section>
                             <Categories/>
-                            <Products />
+                            <SortingSection onCategorySelect={setSelectedCategory} selectedCategory={selectedCategory} />
+                            <Products selectedCategory={selectedCategory} />
                         </section>
                     </div>
                 </div>
             </div>
-            <section className="max-w-[1440px] m-auto pt-[128px]">
+            <section className="max-w-[1440px] m-auto pt-[256px]">
                 <Footer />
             </section>
         </>
@@ -54,13 +57,45 @@ const CateogriesCard = ({title, img}: CategoriesCardProps) => {
     )
 }
 
-const Products = () => {
+const SortingSection = ({ 
+    onCategorySelect, 
+    selectedCategory 
+}: { 
+    onCategorySelect: (category: string | null) => void;
+    selectedCategory: string | null;
+}) => {
+    const categories = ["Sofa", "Bench", "Chair", "Table"];
+
+    return (
+        <div className="flex justify-between items-center mt-[128px] px-[32px]">
+            <h2 className="text-2xl font-medium">Crafted with excellent material</h2>
+            <div className="flex gap-4">
+                {categories.map((category) => (
+                    <button
+                        key={category}
+                        onClick={() => onCategorySelect(selectedCategory === category ? null : category)}
+                        className={`px-4 py-2 rounded-full ${
+                            selectedCategory === category 
+                            ? "bg-black text-white" 
+                            : "bg-[#ededed]"
+                        }`}
+                    >
+                        {category}
+                    </button>
+                ))}
+            </div>
+        </div>
+    );
+};
+
+const Products = ({ selectedCategory }: { selectedCategory: string | null }) => {
     const [products, setProducts] = useState<Product[]>([]);
 
     useEffect(() => {
         const fetchProducts = async () => {
             try {
                 const productsData = await getAllProducts();
+                console.log('Fetched products:', productsData);
                 setProducts(productsData);
             } catch (error) {
                 console.error("Error fetching products:", error);
@@ -69,14 +104,23 @@ const Products = () => {
         fetchProducts();
     }, []);
 
+    const filteredProducts = selectedCategory
+        ? products.filter(product => {
+            console.log('Comparing:', product.categories, selectedCategory);
+            return product.categories?.includes(selectedCategory);
+          })
+        : products;
+
+    console.log('Filtered products:', filteredProducts);
+
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-[128px] px-[32px] pb-[256px]">
-            {products.length > 0 ? (
-                products.map((product) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-[64px] px-[32px] pb-[256px]">
+            {filteredProducts.length > 0 ? (
+                filteredProducts.map((product) => (
                     <ProductCard key={product.productId} product={product} />
                 ))
             ) : (
-                <p>Loading products...</p>
+                <p className="col-span-full text-center text-lg">No products found in this category</p>
             )}
         </div>
     );
