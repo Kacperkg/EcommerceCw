@@ -27,7 +27,7 @@ export default function Explore() {
                     </div>
                 </div>
             </div>
-            <section className="max-w-[1440px] m-auto pt-[256px]">
+            <section className="max-w-[1440px] m-auto pt-[384px]">
                 <Footer />
             </section>
         </>
@@ -88,8 +88,72 @@ const SortingSection = ({
     );
 };
 
+const FilterSection = ({
+    onPriceChange,
+    onColourChange,
+    selectedPrice,
+    selectedColour
+}: {
+    onPriceChange: (range: string) => void;
+    onColourChange: (colour: string) => void;
+    selectedPrice: string;
+    selectedColour: string;
+}) => {
+    const priceRanges = [
+        "All Prices",
+        "Under £100",
+        "£100 - £300",
+        "£300 - £600",
+        "Above £600"
+    ];
+
+    const colours = [
+        "All Colours",
+        "Black",
+        "White",
+        "Brown",
+        "Beige",
+        "Blue",
+    ];
+
+    return (
+        <div className="w-[250px] pr-8 border-r">
+            <div className="mb-8">
+                <h3 className="text-lg font-medium mb-4">Price Range</h3>
+                {priceRanges.map((range) => (
+                    <button
+                        key={range}
+                        onClick={() => onPriceChange(range)}
+                        className={`block mb-2 ${
+                            selectedPrice === range ? "font-bold" : ""
+                        }`}
+                    >
+                        {range}
+                    </button>
+                ))}
+            </div>
+            <div>
+                <h3 className="text-lg font-medium mb-4">Colour</h3>
+                {colours.map((colour) => (
+                    <button
+                        key={colour}
+                        onClick={() => onColourChange(colour)}
+                        className={`block mb-2 ${
+                            selectedColour === colour ? "font-bold" : ""
+                        }`}
+                    >
+                        {colour}
+                    </button>
+                ))}
+            </div>
+        </div>
+    );
+};
+
 const Products = ({ selectedCategory }: { selectedCategory: string | null }) => {
     const [products, setProducts] = useState<Product[]>([]);
+    const [selectedPrice, setSelectedPrice] = useState("All Prices");
+    const [selectedColour, setSelectedColour] = useState("All Colours");
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -104,24 +168,56 @@ const Products = ({ selectedCategory }: { selectedCategory: string | null }) => 
         fetchProducts();
     }, []);
 
-    const filteredProducts = selectedCategory
-        ? products.filter(product => {
-            console.log('Comparing:', product.categories, selectedCategory);
-            return product.categories?.includes(selectedCategory);
-          })
-        : products;
+    const filterProducts = (products: Product[]) => {
+        return products.filter(product => {
+            console.log('Product filters:', product.filters);
+            
+            const matchesCategory = !selectedCategory || product.categories?.includes(selectedCategory);
+            const matchesColour = selectedColour === "All Colours" ||
+            product.colour?.some(c => c.toLowerCase() === selectedColour.toLowerCase());
+            
+            let matchesPrice = true;
+            if (selectedPrice !== "All Prices") {
+                const cost = product.cost;
+                switch (selectedPrice) {
+                    case "Under £100":
+                        matchesPrice = cost < 100;
+                        break;
+                    case "£100 - £300":
+                        matchesPrice = cost >= 100 && cost <= 300;
+                        break;
+                    case "£300 - £600":
+                        matchesPrice = cost > 300 && cost <= 600;
+                        break;
+                    case "Above £600":
+                        matchesPrice = cost > 600;
+                        break;
+                }
+            }
+            
+            return matchesCategory && matchesColour && matchesPrice;
+        });
+    };
 
-    console.log('Filtered products:', filteredProducts);
+    const filteredProducts = filterProducts(products);
 
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-[64px] px-[32px] pb-[256px]">
-            {filteredProducts.length > 0 ? (
-                filteredProducts.map((product) => (
-                    <ProductCard key={product.productId} product={product} />
-                ))
-            ) : (
-                <p className="col-span-full text-center text-lg">No products found in this category</p>
-            )}
+        <div className="flex gap-8 mt-[64px] px-[32px]">
+            <FilterSection
+                onPriceChange={setSelectedPrice}
+                onColourChange={setSelectedColour}
+                selectedPrice={selectedPrice}
+                selectedColour={selectedColour}
+            />
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 pb-[256px] flex-1">
+                {filteredProducts.length > 0 ? (
+                    filteredProducts.map((product) => (
+                        <ProductCard key={product.productId} product={product} />
+                    ))
+                ) : (
+                    <p className="col-span-full text-center text-lg">No products found with selected filters</p>
+                )}
+            </div>
         </div>
     );
 };
@@ -130,8 +226,8 @@ const ProductCard = ({ product }: { product: Product }) => {
     const [isLiked, setIsLiked] = useState(false);
 
     return (
-        <div className="relative group max-w-[300px] w-full mx-auto">
-            <div className="aspect-square overflow-hidden">
+        <div className="relative group max-w-[220px] w-full mx-auto">
+            <div className="aspect-square overflow-hidden rounded-lg">
                 <img 
                     src={product.images[0]}
                     alt={product.name} 

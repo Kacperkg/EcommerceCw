@@ -23,6 +23,7 @@ export interface User {
     images: string[];
     description: string;
     cost: number;
+    colour: string[];
     stock: number;
     categories: string;
     addedDate: string;
@@ -30,7 +31,7 @@ export interface User {
   }
   
   export interface ProductFilters {
-    color: string;
+    colour: string;
     material: string;
     priceRange: string;
   }
