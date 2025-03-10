@@ -8,7 +8,7 @@ import Footer from "../components/Footer"
 import { useState, useEffect } from "react";
 import { getAllProducts } from "../firebase/fetches";
 import { Product } from "../types/DatabaseTypes";
-import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
+import { AiOutlineHeart, AiFillHeart, AiOutlineShoppingCart } from "react-icons/ai";
 
 export default function Explore() {
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -203,14 +203,14 @@ const Products = ({ selectedCategory }: { selectedCategory: string | null }) => 
 
     return (
         <div className="flex gap-8 mt-[64px] px-[32px] relative">
-            <div className="h-[950px] relative">
+            <div className="relative">
                 <FilterSection
                     onPriceChange={setSelectedPrice}
                     onColourChange={setSelectedColour}
                     selectedPrice={selectedPrice}
                     selectedColour={selectedColour}
                 />
-                <div className="absolute top-0 right-0 w-[1px] h-full bg-[#000000]" />
+                <div className="absolute top-0 right-0 w-[1px] h-[calc(100%-256px)] bg-[#000000]" />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 pb-[256px] flex-1">
                 {filteredProducts.length > 0 ? (
@@ -245,7 +245,12 @@ const ProductCard = ({ product }: { product: Product }) => {
             </button>
             <div className="mt-4 space-y-2">
                 <h3 className="text-lg font-medium">{product.name}</h3>
-                <span className="font-semibold">£{product.cost}</span>
+                <div className="flex justify-between items-center">
+                    <span className="font-semibold">£{product.cost}</span>
+                    <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                        <AiOutlineShoppingCart size={20} />
+                    </button>
+                </div>
             </div>
         </div>
     );
