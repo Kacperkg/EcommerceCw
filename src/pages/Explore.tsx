@@ -6,7 +6,7 @@ import DiningTable from '../assets/Explore/diningtable.png'
 import Navbar from "../components/Navbar"
 import Footer from "../components/Footer"
 import { useState, useEffect } from "react";
-import { getProductById, getAllProducts } from "../firebase/fetches";
+import { getAllProducts } from "../firebase/fetches";
 import { Product } from "../types/DatabaseTypes";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 
@@ -117,7 +117,7 @@ const FilterSection = ({
     ];
 
     return (
-        <div className="w-[250px] pr-8 border-r">
+        <div className="w-[250px] pr-8">
             <div className="mb-8">
                 <h3 className="text-lg font-medium mb-4">Price Range</h3>
                 {priceRanges.map((range) => (
@@ -202,13 +202,16 @@ const Products = ({ selectedCategory }: { selectedCategory: string | null }) => 
     const filteredProducts = filterProducts(products);
 
     return (
-        <div className="flex gap-8 mt-[64px] px-[32px]">
-            <FilterSection
-                onPriceChange={setSelectedPrice}
-                onColourChange={setSelectedColour}
-                selectedPrice={selectedPrice}
-                selectedColour={selectedColour}
-            />
+        <div className="flex gap-8 mt-[64px] px-[32px] relative">
+            <div className="h-[950px] relative">
+                <FilterSection
+                    onPriceChange={setSelectedPrice}
+                    onColourChange={setSelectedColour}
+                    selectedPrice={selectedPrice}
+                    selectedColour={selectedColour}
+                />
+                <div className="absolute top-0 right-0 w-[1px] h-full bg-[#000000]" />
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 pb-[256px] flex-1">
                 {filteredProducts.length > 0 ? (
                     filteredProducts.map((product) => (
@@ -227,7 +230,7 @@ const ProductCard = ({ product }: { product: Product }) => {
 
     return (
         <div className="relative group max-w-[220px] w-full mx-auto">
-            <div className="aspect-square overflow-hidden rounded-lg">
+            <div className="aspect-square overflow-hidden">
                 <img 
                     src={product.images[0]}
                     alt={product.name} 
