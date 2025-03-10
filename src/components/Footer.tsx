@@ -7,7 +7,7 @@ export default function Footer() {
         <li><StaggerButton href='#'>Facebook</StaggerButton></li>
         <li><StaggerButton href='#'>Instagram</StaggerButton></li>
         <li><StaggerButton href='#'>linkedin</StaggerButton></li>
-        <li><StaggerButton href='#'>Pintrest</StaggerButton></li>
+        <li><StaggerButton href='#'>Pinterest</StaggerButton></li>
       </ul>
       <div className="flex flex-col border-t border-b pt-[32px] pb-[16px] gap-[32px]">
         <div className="flex justify-between">
