@@ -1,14 +1,26 @@
-import { CategoriesCardProps } from "../types/Explore"
-import Chair from '../assets/Explore/chair.png'
-import Couch from '../assets/Explore/couchs.png'
-import Desk from '../assets/Explore/desk.png'
-import DiningTable from '../assets/Explore/diningtable.png'
+import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "../components/Navbar"
 import Footer from "../components/Footer"
 import { useState, useEffect } from "react";
 import { getAllProducts } from "../firebase/fetches";
 import { Product } from "../types/DatabaseTypes";
 import { AiOutlineHeart, AiFillHeart, AiOutlineShoppingCart } from "react-icons/ai";
+import sofaHero from "../assets/home/sofaHero.jpg";
+import heroImage2 from "../assets/home/living-room.jpg";
+import heroImage3 from "../assets/home/kitchen.jpg";
+
+const slides = [
+    { 
+        image: sofaHero,
+        title: "Best Sellers",
+        subtitle: "Discover Our Most Popular Pieces"
+    },
+    {
+        image: heroImage2,
+        title: "Customer Favorites",
+        subtitle: "Loved by Our Community"
+    },
+];
 
 export default function Explore() {
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -20,7 +32,7 @@ export default function Explore() {
                     <Navbar />
                     <div className="max-w-[1440px] m-auto">
                         <section>
-                            <Categories/>
+                            <Banner />
                             <SortingSection onCategorySelect={setSelectedCategory} selectedCategory={selectedCategory} />
                             <Products selectedCategory={selectedCategory} />
                         </section>
@@ -34,28 +46,70 @@ export default function Explore() {
     )
 }
 
-const Categories = () => {
-    return (
-        <div className="flex justify-between mt-[64px] gap-[16px]">
-            <CateogriesCard title="Chairs" img={Chair}/>
-            <CateogriesCard title="Couches" img={Couch}/>
-            <CateogriesCard title="Dining Tables" img={DiningTable}/>
-            <CateogriesCard title="Desks" img={Desk}/>
-        </div>
-    )
-}
+const Banner = () => {
+    const [index, setIndex] = useState(0);
 
-const CateogriesCard = ({title, img}: CategoriesCardProps) => {
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setIndex((prevIndex) => (prevIndex + 1) % slides.length);
+        }, 5000);
+
+        return () => clearInterval(interval);
+    }, []);
+
     return (
-        <div className="flex justify-between items-center pl-[16px] pr-[16px] py-[8px] max-w-[322px] flex-1 gap-[16px] border border-black">
-            <div className="flex flex-col justify-between h-[100%] py-8 items-center gap-[8px]">
-                <h3 className="text-xl nowrap font-semibold">{title}</h3>
-                <button className="px-4 py-2 hover:bg-black hover:text-[#f6f1eb] transition-colors border border-black">See More</button>
-            </div>
-            <img src={img} alt="" className="max-w-[120px] aspect-square"/>
+        <div className="relative h-[30vh] w-full overflow-hidden border-r border-l border-b">
+            <div
+                className="absolute inset-0 bg-cover bg-center"
+                style={{
+                    backgroundImage: `url(${slides[(index + 1) % slides.length]?.image || slides[0].image})`,
+                }}
+            />
+
+            <AnimatePresence>
+                <motion.div
+                    key={index}
+                    className="absolute inset-0 overflow-hidden"
+                    initial={{ y: "0%" }}
+                    animate={{ y: "100%" }}
+                    exit={{ y: "100%" }}
+                    transition={{ ease: "easeInOut", duration: 0.5, delay: 4 }}
+                >
+                    <div
+                        className="absolute inset-0 bg-cover bg-center"
+                        style={{ backgroundImage: `url(${slides[index].image})` }}
+                    />
+                    <div className="absolute left-[32px] bottom-[32px] text-white p-4 rounded-lg text-left gap-[16px] flex flex-col">
+                        <motion.h3
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.5, delay: 0.2 }}
+                            className="text-2xl"
+                        >
+                            {slides[index].subtitle}
+                        </motion.h3>
+                        <motion.h1
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.5, delay: 0.4 }}
+                            className="text-7xl pb-[16px] drop-shadow-lg"
+                        >
+                            {slides[index].title}
+                        </motion.h1>
+                        <motion.button
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.6 }}
+                            className="px-6 py-3 bg-white text-black rounded-full text-lg w-fit hover:bg-black hover:text-white transition-colors"
+                        >
+                            Shop Now
+                        </motion.button>
+                    </div>
+                </motion.div>
+            </AnimatePresence>
         </div>
-    )
-}
+    );
+};
 
 const SortingSection = ({ 
     onCategorySelect, 
@@ -234,7 +288,7 @@ const ProductCard = ({ product }: { product: Product }) => {
                 <img 
                     src={product.images[0]}
                     alt={product.name} 
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration:300"
                 />
             </div>
             <button 
