@@ -271,7 +271,7 @@ const Products = ({ selectedCategory }: { selectedCategory: string | null }) => 
                     selectedPrice={selectedPrice}
                     selectedColour={selectedColour}
                 />
-                <div className="absolute top-0 right-0 w-[1px] h-[calc(100%-256px)] bg-[#000000]" />
+                <div className="absolute top-0 right-0 w-[1px] h-full bg-[#000000]" />
             </div>
             <div className="flex-1">
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 pb-8">
@@ -284,7 +284,7 @@ const Products = ({ selectedCategory }: { selectedCategory: string | null }) => 
                     )}
                 </div>
                 {totalPages > 1 && (
-                    <div className="flex justify-center gap-2 mb-[32px]">
+                    <div className="flex justify-center gap-2 mt-[32px]">
                         {Array.from({ length: totalPages }, (_, i) => i + 1).map((number) => (
                             <button
                                 key={number}
