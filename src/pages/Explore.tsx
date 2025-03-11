@@ -1,28 +1,33 @@
 import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "../components/Navbar"
 import Footer from "../components/Footer"
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { getAllProducts } from "../firebase/fetches";
 import { Product } from "../types/DatabaseTypes";
 import { AiOutlineHeart, AiFillHeart, AiOutlineShoppingCart } from "react-icons/ai";
-import sofaHero from "../assets/home/sofaHero.jpg";
-import heroImage2 from "../assets/home/living-room.jpg";
+import bench from "../assets/Explore/bench.avif";
+import whitedesk from "../assets/Explore/whitedesk.avif";
 
 const slides = [
-    { 
-        image: sofaHero,
-        title: "Best Sellers",
-        subtitle: "Discover Our Most Popular Pieces"
-    },
     {
-        image: heroImage2,
-        title: "Customer Favorites",
-        subtitle: "Loved by Our Community"
+        image: whitedesk,
+        title: "Explore Styles",
+        subtitle: "Curated For Your Home"
+    },
+    { 
+        image: bench,
+        title: "Browse Collection",
+        subtitle: "Find Your Perfect Piece"
     },
 ];
 
 export default function Explore() {
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+    const productsRef = useRef<HTMLDivElement>(null);
+
+    const scrollToProducts = () => {
+        productsRef.current?.scrollIntoView({ behavior: 'smooth' });
+    };
 
     return (
         <div className="min-h-screen flex flex-col">
@@ -30,9 +35,11 @@ export default function Explore() {
                 <Navbar />
                 <div className="max-w-[1440px] m-auto">
                     <section>
-                        <Banner />
+                        <Banner onShopNowClick={scrollToProducts} />
                         <SortingSection onCategorySelect={setSelectedCategory} selectedCategory={selectedCategory} />
-                        <Products selectedCategory={selectedCategory} />
+                        <div ref={productsRef}>
+                            <Products selectedCategory={selectedCategory} />
+                        </div>
                     </section>
                 </div>
             </div>
@@ -45,7 +52,7 @@ export default function Explore() {
     )
 }
 
-const Banner = () => {
+const Banner = ({ onShopNowClick }: { onShopNowClick: () => void }) => {
     const [index, setIndex] = useState(0);
 
     useEffect(() => {
@@ -99,7 +106,8 @@ const Banner = () => {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: 0.6 }}
-                            className="px-6 py-3 bg-white text-black rounded-full text-lg w-fit hover:bg-black hover:text-white transition-colors"
+                            onClick={onShopNowClick}
+                            className="px-6 py-3 text-white border border-white text-lg w-fit hover:bg-black/20 hover:backdrop-blur-sm transition-all duration-300"
                         >
                             Shop Now
                         </motion.button>
