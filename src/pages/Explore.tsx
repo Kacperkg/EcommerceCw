@@ -7,7 +7,6 @@ import { Product } from "../types/DatabaseTypes";
 import { AiOutlineHeart, AiFillHeart, AiOutlineShoppingCart } from "react-icons/ai";
 import sofaHero from "../assets/home/sofaHero.jpg";
 import heroImage2 from "../assets/home/living-room.jpg";
-import heroImage3 from "../assets/home/kitchen.jpg";
 
 const slides = [
     { 
@@ -26,23 +25,23 @@ export default function Explore() {
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
     return (
-        <>
-            <div className="relative h-[100dvh]">
-                <div className="absolute z-[99] inset-0 m-auto top-[32px]">
-                    <Navbar />
-                    <div className="max-w-[1440px] m-auto">
-                        <section>
-                            <Banner />
-                            <SortingSection onCategorySelect={setSelectedCategory} selectedCategory={selectedCategory} />
-                            <Products selectedCategory={selectedCategory} />
-                        </section>
-                    </div>
+        <div className="min-h-screen flex flex-col">
+            <div className="z-[99] pt-[32px]">
+                <Navbar />
+                <div className="max-w-[1440px] m-auto">
+                    <section>
+                        <Banner />
+                        <SortingSection onCategorySelect={setSelectedCategory} selectedCategory={selectedCategory} />
+                        <Products selectedCategory={selectedCategory} />
+                    </section>
                 </div>
             </div>
-            <section className="max-w-[1440px] m-auto pt-[512px]">
-                <Footer />
-            </section>
-        </>
+            <div className="mt-auto">
+                <div className="max-w-[1440px] m-auto mt-[64px]">
+                    <Footer />
+                </div>
+            </div>
+        </div>
     )
 }
 
@@ -208,6 +207,8 @@ const Products = ({ selectedCategory }: { selectedCategory: string | null }) => 
     const [products, setProducts] = useState<Product[]>([]);
     const [selectedPrice, setSelectedPrice] = useState("All Prices");
     const [selectedColour, setSelectedColour] = useState("All Colours");
+    const [currentPage, setCurrentPage] = useState(1);
+    const productsPerPage = 9;
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -254,6 +255,12 @@ const Products = ({ selectedCategory }: { selectedCategory: string | null }) => 
     };
 
     const filteredProducts = filterProducts(products);
+    const indexOfLastProduct = currentPage * productsPerPage;
+    const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+    const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+    const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+
+    const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
     return (
         <div className="flex gap-8 mt-[64px] px-[32px] relative">
@@ -266,13 +273,32 @@ const Products = ({ selectedCategory }: { selectedCategory: string | null }) => 
                 />
                 <div className="absolute top-0 right-0 w-[1px] h-[calc(100%-256px)] bg-[#000000]" />
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 pb-[256px] flex-1">
-                {filteredProducts.length > 0 ? (
-                    filteredProducts.map((product) => (
-                        <ProductCard key={product.productId} product={product} />
-                    ))
-                ) : (
-                    <p className="col-span-full text-center text-lg">No products found with selected filters</p>
+            <div className="flex-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 pb-8">
+                    {currentProducts.length > 0 ? (
+                        currentProducts.map((product) => (
+                            <ProductCard key={product.productId} product={product} />
+                        ))
+                    ) : (
+                        <p className="col-span-full text-center text-lg">No products found with selected filters</p>
+                    )}
+                </div>
+                {totalPages > 1 && (
+                    <div className="flex justify-center gap-2 mb-[32px]">
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((number) => (
+                            <button
+                                key={number}
+                                onClick={() => paginate(number)}
+                                className={`px-4 py-2 border ${
+                                    currentPage === number
+                                        ? 'bg-black text-[#f6f1eb]'
+                                        : 'border-black'
+                                }`}
+                            >
+                                {number}
+                            </button>
+                        ))}
+                    </div>
                 )}
             </div>
         </div>
