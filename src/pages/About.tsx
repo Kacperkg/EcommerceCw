@@ -1,8 +1,8 @@
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { MainButton } from "../components/MainButton";
 import { motion } from "framer-motion";
-import heroImage from "../assets/home/hero.jpg"; // Import the hero image
+import heroImage from "../assets/home/hero.jpg";
+import quoteImage from "../assets/home/jw.jpg";
 
 const About = () => {
   return (
@@ -13,7 +13,6 @@ const About = () => {
           <AboutHero />
           <AboutContent />
           <Values />
-          <Team />
         </div>
       </div>
       <div className="mt-auto">
@@ -60,7 +59,7 @@ const AboutHero = () => {
 const AboutContent = () => {
   return (
     <section className="flex flex-col md:flex-row gap-12 mt-[128px] px-[32px]">
-      <div className="md:w-1/2">
+      <div className="md:w-1/2 justify-center flex flex-col gap-6">
         <h2 className="text-3xl font-medium mb-6">Our Story</h2>
         <p className="text-lg mb-6">
           Founded in 2025, Essence was born from a passion for thoughtful design and sustainable craftsmanship. We believe that furniture should not only be beautiful but should also tell a story and stand the test of time.
@@ -69,8 +68,12 @@ const AboutContent = () => {
           Our journey began when a group of six designers and craftsmen came together with a shared vision: to create furniture that brings the calming influence of nature into modern urban homes. Each piece in our collection is carefully designed to balance aesthetic appeal with functional excellence.
         </p>
       </div>
-      <div className="md:w-1/2 bg-[#f8f5f0] h-[400px] flex items-center justify-center">
-        <p className="text-3xl italic px-8 text-center">"We believe in creating spaces that inspire peace, creativity, and connection."</p>
+      <div className="md:w-1/2 bg-[#f8f5f0] h-[400px] flex items-center justify-center"       style={{
+        backgroundImage: `url(${quoteImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      }}>
+        <p className="text-3xl italic px-8 text-center text-white">"We believe in creating spaces that inspire peace, creativity, and connection."</p>
       </div>
     </section>
   );
@@ -97,39 +100,13 @@ const Values = () => {
   ];
 
   return (
-    <section className="mt-[128px] px-[32px]">
+    <section className="mt-[128px] mb-[128px] px-[32px]">
       <h2 className="text-3xl font-medium mb-12 text-center">Our Values</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {ourValues.map((value, index) => (
           <div key={index} className="border p-6">
             <h3 className="text-2xl mb-4">{value.title}</h3>
             <p className="text-lg">{value.description}</p>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-};
-
-const Team = () => {
-  const teamMembers = [
-    { name: "Kacper", role: "Founder & Design Director" },
-    { name: "Alex", role: "Head of Production" },
-    { name: "Omar", role: "Lead Designer" },
-    { name: "Omair", role: "Customer Experience Manager" },
-    { name: "Malachy", role: "Manufacturing Director" },
-    { name: "Samir", role: "Sustainability Officer" }
-  ];
-
-  return (
-    <section className="mt-[128px] mb-[128px] px-[32px]">
-      <h2 className="text-3xl font-medium mb-12 text-center">Meet Our Team</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-        {teamMembers.map((member, index) => (
-          <div key={index} className="text-center">
-            <div className="aspect-square bg-[#f8f5f0] mb-4"></div>
-            <h3 className="text-xl font-medium">{member.name}</h3>
-            <p className="text-lg text-gray-600">{member.role}</p>
           </div>
         ))}
       </div>
