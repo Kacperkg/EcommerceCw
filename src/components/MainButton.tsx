@@ -1,15 +1,20 @@
 import { easeInOut, motion } from "framer-motion";
 import { MainButtonProp } from "../types/Universal";
 
-export const MainButton = ({ name }: MainButtonProp) => {
+interface MainButtonProps extends MainButtonProp {
+  onClick?: () => void;
+}
+
+export const MainButton = ({ name, onClick }: MainButtonProps) => {
   return (
     <motion.a
       className="px-[48px] py-[16px] border text-2xl uppercase cursor-pointer flex flex-col relative overflow-hidden"
       whileHover="hovered"
       initial="initial"
       style={{
-        maxWidth: 'fit-content',
+        maxWidth: "fit-content",
       }}
+      onClick={onClick}
     >
       <motion.div
         className="absolute px-[48px] py-[16px] left-0 top-0"

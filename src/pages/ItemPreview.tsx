@@ -1,6 +1,10 @@
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { MainButton } from "../components/MainButton";
+import { useLocation, useNavigate } from "react-router-dom"; // Add useNavigate import
+import { useEffect, useState } from "react";
+import { getAllProducts } from "../firebase/fetches";
+import { Product } from "../types/DatabaseTypes";
 
 export default function ItemPreview() {
   return (
@@ -15,38 +19,58 @@ export default function ItemPreview() {
 }
 
 const Body = () => {
+  const location = useLocation();
+  const product = location.state?.product;
+
   return (
     <>
       <section className="flex justify-between items-center max-w-[1440px] m-auto mt-[64px]">
-        <ProductImages />
-        <ProductInfo />
+        <ProductImages images={product?.images || []} />
+        <ProductInfo product={product} />
       </section>
       <MightLike />
     </>
   );
 };
 
-const ProductImages = () => {
+const ProductImages = ({ images }: { images: string[] }) => {
   return (
     <div className="max-w-[654px] flex-1">
-      <div className="aspect-square flex-1 bg-(--secondary)"></div>
+      <div className="aspect-square flex-1 bg-(--secondary)">
+        {images[0] && (
+          <img
+            src={images[0]}
+            alt="Product"
+            className="w-full h-full object-cover"
+          />
+        )}
+      </div>
       <div className="flex mt-[8px] justify-between">
-        <div className="aspect-square flex-1 max-w-[120px] bg-blue-500"></div>
-        <div className="aspect-square flex-1 max-w-[120px] bg-blue-500"></div>
-        <div className="aspect-square flex-1 max-w-[120px] bg-blue-500"></div>
-        <div className="aspect-square flex-1 max-w-[120px] bg-blue-500"></div>
-        <div className="aspect-square flex-1 max-w-[120px] bg-blue-500"></div>
+        {images.slice(1).map((image, index) => (
+          <div
+            key={index}
+            className="aspect-square flex-1 max-w-[120px] bg-blue-500"
+          >
+            <img
+              src={image}
+              alt={`Product ${index + 1}`}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        ))}
       </div>
     </div>
   );
 };
 
-const ProductInfo = () => {
+const ProductInfo = ({ product }: { product: any }) => {
+  if (!product) return null;
+
   return (
-    <aside className="text-left max-w-[548px]">
+    <aside className="text-left max-w-[548px] flex-1">
       <div className="gap-[16px] flex flex-col">
         <div className="flex items-center justify-between">
-          <h1 className="text-4xl">Product Name</h1>
+          <h1 className="text-4xl">{product.name}</h1>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="32"
@@ -63,12 +87,9 @@ const ProductInfo = () => {
         </div>
         <div>Ratings</div>
       </div>
-      <h1 className="mt-[32px] text-4xl">£ 999</h1>
-      <p className="mt-[32px] text-lg">
-        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Amet
-        perspiciatis est quia ex nostrum, ratione quibusdam aperiam nihil
-        aliquam iure.
-      </p>
+      <h1 className="mt-[32px] text-4xl">£ {product.cost}</h1>
+      <p className="mt-[32px] text-lg">{product.description}</p>
+      <p className="mt-[16px] text-lg">Room: {product.room.join(", ")}</p>
       <div className="mt-[64px]">
         <MainButton name="ADD TO CART" />
       </div>
@@ -77,16 +98,56 @@ const ProductInfo = () => {
 };
 
 const MightLike = () => {
+  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  const location = useLocation();
+  const product = location.state?.product;
+  const navigate = useNavigate(); // Add useNavigate hook
+
+  useEffect(() => {
+    const fetchRelatedProducts = async () => {
+      try {
+        const productsData = await getAllProducts();
+        const filteredProducts = productsData.filter(
+          (p) =>
+            p.room?.some((r) => product.room.includes(r.toLowerCase())) &&
+            p.productId !== product.productId
+        );
+        setRelatedProducts(filteredProducts);
+      } catch (error) {
+        console.error("Error fetching related products:", error);
+      }
+    };
+
+    if (product) {
+      fetchRelatedProducts();
+    }
+  }, [product]);
+
   return (
     <div className="flex flex-col uppercase text-left max-w-[1440px] m-auto mt-[80px]">
       <h2 className="text-3xl">You might also like</h2>
       <div className="flex mt-[16px] justify-between">
-        <div className="flex-1 max-w-[225px] bg-red-500 aspect-square"></div>
-        <div className="flex-1 max-w-[225px] bg-red-500 aspect-square"></div>
-        <div className="flex-1 max-w-[225px] bg-red-500 aspect-square"></div>
-        <div className="flex-1 max-w-[225px] bg-red-500 aspect-square"></div>
-        <div className="flex-1 max-w-[225px] bg-red-500 aspect-square"></div>
-        <div className="flex-1 max-w-[225px] bg-red-500 aspect-square"></div>
+        {relatedProducts.length > 0 ? (
+          relatedProducts.map((relatedProduct) => (
+            <div
+              key={relatedProduct.productId}
+              className="flex-1 max-w-[225px] bg-red-500 aspect-square cursor-pointer"
+              onClick={() =>
+                navigate(`/item-preview`, {
+                  state: { product: relatedProduct },
+                })
+              } // Add onClick handler
+            >
+              <img
+                src={relatedProduct.images[0]}
+                alt={relatedProduct.name}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          ))
+        ) : (
+          <p>No related products found</p>
+        )}
       </div>
     </div>
   );

@@ -27,9 +27,9 @@ export default function Navbar() {
           </a>
         </li>
         <li className="py-[16px]">
-          <a href="" className="border-l py-[16px] px-[32px]">
+          <Link to="/cart" className="border-l py-[16px] px-[32px]">
             Cart
-          </a>
+          </Link>
         </li>
         <li className="py-[16px]">
           <a href="" className="border-l py-[16px] px-[32px]">

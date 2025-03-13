@@ -23,7 +23,7 @@ const Admin: React.FC = () => {
     if (name === "categories" || name === "room" || name === "colour") {
       setFormData({
         ...formData,
-        [name]: value.split(",").map((item) => item.trim()),
+        [name]: value.split(",").map((item) => item.trim().toLowerCase()),
       });
     } else if (name === "images") {
       setFormData({

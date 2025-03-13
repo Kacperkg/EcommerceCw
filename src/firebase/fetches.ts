@@ -5,7 +5,7 @@ import {
   getDoc,
   setDoc,
   collection,
-  getDocs
+  getDocs,
 } from "firebase/firestore";
 
 import {
@@ -30,7 +30,7 @@ const firebaseConfig = {
   storageBucket: "ecommercecw-b7a24.firebasestorage.app",
   messagingSenderId: "324553281505",
   appId: "1:324553281505:web:62b7d04bd16aa7ab32cca0",
-  measurementId: "G-XTPPR74DKP"
+  measurementId: "G-XTPPR74DKP",
 };
 
 const app = initializeApp(firebaseConfig);
@@ -39,13 +39,17 @@ const db = getFirestore(app);
 /** Firestore CRUD Operations **/
 
 // Get User by ID
-export const getUserById = async (userId: string): Promise<User | undefined> => {
+export const getUserById = async (
+  userId: string
+): Promise<User | undefined> => {
   const userDoc = await getDoc(doc(db, "users", userId));
   return userDoc.exists() ? (userDoc.data() as User) : undefined;
 };
 
 // Get Product by ID
-export const getProductById = async (productId: string): Promise<Product | undefined> => {
+export const getProductById = async (
+  productId: string
+): Promise<Product | undefined> => {
   const productDoc = await getDoc(doc(db, "products", productId));
   return productDoc.exists() ? (productDoc.data() as Product) : undefined;
 };
@@ -53,67 +57,97 @@ export const getProductById = async (productId: string): Promise<Product | undef
 // Get All Products
 export const getAllProducts = async (): Promise<Product[]> => {
   const querySnapshot = await getDocs(collection(db, "products"));
-  return querySnapshot.docs.map(doc => ({ ...doc.data(), productId: doc.id }) as Product);
+  return querySnapshot.docs.map(
+    (doc) => ({ ...doc.data(), productId: doc.id } as Product)
+  );
 };
 
 // Get Category by ID
-export const getCategoryById = async (categoryId: string): Promise<Category | undefined> => {
+export const getCategoryById = async (
+  categoryId: string
+): Promise<Category | undefined> => {
   const categoryDoc = await getDoc(doc(db, "categories", categoryId));
   return categoryDoc.exists() ? (categoryDoc.data() as Category) : undefined;
 };
 
 // Get Order by ID
-export const getOrderById = async (orderId: string): Promise<Order | undefined> => {
+export const getOrderById = async (
+  orderId: string
+): Promise<Order | undefined> => {
   const orderDoc = await getDoc(doc(db, "orders", orderId));
   return orderDoc.exists() ? (orderDoc.data() as Order) : undefined;
 };
 
 // Get Payment by ID
-export const getPaymentById = async (paymentId: string): Promise<Payment | undefined> => {
+export const getPaymentById = async (
+  paymentId: string
+): Promise<Payment | undefined> => {
   const paymentDoc = await getDoc(doc(db, "payments", paymentId));
   return paymentDoc.exists() ? (paymentDoc.data() as Payment) : undefined;
 };
 
 // Get Review by ID
-export const getReviewById = async (reviewId: string): Promise<Review | undefined> => {
+export const getReviewById = async (
+  reviewId: string
+): Promise<Review | undefined> => {
   const reviewDoc = await getDoc(doc(db, "reviews", reviewId));
   return reviewDoc.exists() ? (reviewDoc.data() as Review) : undefined;
 };
 
 // Get Wishlist by ID
-export const getWishlistById = async (wishlistId: string): Promise<Wishlist | undefined> => {
+export const getWishlistById = async (
+  wishlistId: string
+): Promise<Wishlist | undefined> => {
   const wishlistDoc = await getDoc(doc(db, "wishlists", wishlistId));
   return wishlistDoc.exists() ? (wishlistDoc.data() as Wishlist) : undefined;
 };
 
 // Get Shipping by ID
-export const getShippingById = async (shippingId: string): Promise<Shipping | undefined> => {
+export const getShippingById = async (
+  shippingId: string
+): Promise<Shipping | undefined> => {
   const shippingDoc = await getDoc(doc(db, "shippings", shippingId));
   return shippingDoc.exists() ? (shippingDoc.data() as Shipping) : undefined;
 };
 
 // Get Coupon by ID
-export const getCouponById = async (couponId: string): Promise<Coupon | undefined> => {
+export const getCouponById = async (
+  couponId: string
+): Promise<Coupon | undefined> => {
   const couponDoc = await getDoc(doc(db, "coupons", couponId));
   return couponDoc.exists() ? (couponDoc.data() as Coupon) : undefined;
 };
 
 // Get Cart by ID
-export const getCartById = async (cartId: string): Promise<Cart | undefined> => {
+export const getCartById = async (
+  cartId: string
+): Promise<Cart | undefined> => {
   const cartDoc = await getDoc(doc(db, "carts", cartId));
   return cartDoc.exists() ? (cartDoc.data() as Cart) : undefined;
 };
 
 // Get Points by ID
-export const getPointsById = async (pointId: string): Promise<Points | undefined> => {
+export const getPointsById = async (
+  pointId: string
+): Promise<Points | undefined> => {
   const pointsDoc = await getDoc(doc(db, "points", pointId));
   return pointsDoc.exists() ? (pointsDoc.data() as Points) : undefined;
 };
 
 // Get Filter by ID
-export const getFilterById = async (filterId: string): Promise<Filter | undefined> => {
+export const getFilterById = async (
+  filterId: string
+): Promise<Filter | undefined> => {
   const filterDoc = await getDoc(doc(db, "filters", filterId));
   return filterDoc.exists() ? (filterDoc.data() as Filter) : undefined;
+};
+
+// Get Cart by User ID
+export const getCartByUserId = async (
+  userId: string
+): Promise<Cart | undefined> => {
+  const cartDoc = await getDoc(doc(db, "carts", userId));
+  return cartDoc.exists() ? (cartDoc.data() as Cart) : undefined;
 };
 
 // Set User
@@ -174,4 +208,37 @@ export const setPoints = async (points: Points): Promise<void> => {
 // Set Filter
 export const setFilter = async (filter: Filter): Promise<void> => {
   await setDoc(doc(db, "filters", filter.filterId), filter);
+};
+
+// Set Cart by User ID
+export const setCartByUserId = async (
+  userId: string,
+  cart: Cart
+): Promise<void> => {
+  await setDoc(doc(db, "carts", userId), cart);
+};
+
+// Add Item to Cart
+export const addItemToCart = async (
+  userId: string,
+  product: Product
+): Promise<void> => {
+  const cartDoc = await getDoc(doc(db, "carts", userId));
+  let cart = cartDoc.exists()
+    ? (cartDoc.data() as Cart)
+    : { cartId: userId, items: [] };
+  cart.items.push(product);
+  await setDoc(doc(db, "carts", userId), cart);
+};
+
+// Add Item to Guest Cart
+export const addItemToGuestCart = (product: Product): void => {
+  const guestCart = JSON.parse(localStorage.getItem("guestCart") || "[]");
+  guestCart.push(product);
+  localStorage.setItem("guestCart", JSON.stringify(guestCart));
+};
+
+// Get Guest Cart
+export const getGuestCart = (): Product[] => {
+  return JSON.parse(localStorage.getItem("guestCart") || "[]");
 };
