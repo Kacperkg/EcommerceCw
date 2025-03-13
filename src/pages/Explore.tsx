@@ -347,6 +347,38 @@ const ProductCard = ({
   onClick: () => void;
 }) => {
   const [isLiked, setIsLiked] = useState(false);
+  const [isInCart, setIsInCart] = useState(false);
+
+  useEffect(() => {
+    const cartItems = JSON.parse(localStorage.getItem("cart") || "[]");
+    const productInCart = cartItems.some(
+      (item: { productId: string }) => item.productId === product.productId
+    );
+    setIsInCart(productInCart);
+  }, [product.productId]);
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const cartItems = JSON.parse(localStorage.getItem("cart") || "[]");
+    const existingItemIndex: number = cartItems.findIndex(
+      (item: { productId: string }) => item.productId === product.productId
+    );
+
+    if (existingItemIndex >= 0) {
+
+      cartItems.splice(existingItemIndex, 1);
+      setIsInCart(false);
+    } else {
+
+      cartItems.push({
+        ...product,
+        quantity: 1,
+      });
+      setIsInCart(true);
+    }
+
+    localStorage.setItem("cart", JSON.stringify(cartItems));
+  };
 
   return (
     <div
@@ -378,11 +410,10 @@ const ProductCard = ({
         <div className="flex justify-between items-center">
           <span className="font-semibold">£{product.cost}</span>
           <button 
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-            onClick={(e) => {
-              e.stopPropagation();
-              // Add cart functionality here
-            }}
+            className={`p-2 rounded-full transition-colors ${
+              isInCart ? 'bg-black text-white' : 'hover:bg-gray-100'
+            }`}
+            onClick={handleAddToCart}
           >
             <AiOutlineShoppingCart size={20} />
           </button>
