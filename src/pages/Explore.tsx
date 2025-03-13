@@ -361,7 +361,10 @@ const ProductCard = ({
         />
       </div>
       <button
-        onClick={() => setIsLiked(!isLiked)}
+        onClick={(e) => {
+          e.stopPropagation();
+          setIsLiked(!isLiked);
+        }}
         className="absolute top-4 right-4 p-2 bg-white rounded-full shadow-md"
       >
         {isLiked ? (
@@ -374,7 +377,13 @@ const ProductCard = ({
         <h3 className="text-lg font-medium">{product.name}</h3>
         <div className="flex justify-between items-center">
           <span className="font-semibold">£{product.cost}</span>
-          <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+          <button 
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+            onClick={(e) => {
+              e.stopPropagation();
+              // Add cart functionality here
+            }}
+          >
             <AiOutlineShoppingCart size={20} />
           </button>
         </div>
