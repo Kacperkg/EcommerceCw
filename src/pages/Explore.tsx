@@ -42,12 +42,17 @@ export default function Explore() {
         <div className="max-w-[1440px] m-auto">
           <section>
             <Banner onShopNowClick={scrollToProducts} />
-            <SortingSection
-              onCategorySelect={setSelectedCategory}
-              selectedCategory={selectedCategory}
-            />
             <div ref={productsRef}>
-              <Products selectedCategory={selectedCategory} />
+              <SortingSection
+                onCategorySelect={setSelectedCategory}
+                selectedCategory={selectedCategory}
+              />
+            </div>
+            <div>
+              <Products 
+                selectedCategory={selectedCategory} 
+                scrollToProducts={scrollToProducts} 
+              />
             </div>
           </section>
         </div>
@@ -217,8 +222,10 @@ const FilterSection = ({
 
 const Products = ({
   selectedCategory,
+  scrollToProducts,
 }: {
   selectedCategory: string | null;
+  scrollToProducts: () => void;
 }) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedPrice, setSelectedPrice] = useState("All Prices");
@@ -284,7 +291,10 @@ const Products = ({
   );
   const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
 
-  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+  const paginate = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+    scrollToProducts(); // Use scrollToProducts instead of paginationScroll
+  };
 
   return (
     <div className="flex gap-8 mt-[64px] px-[32px] relative">
