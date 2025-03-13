@@ -66,6 +66,24 @@ const ProductImages = ({ images }: { images: string[] }) => {
 const ProductInfo = ({ product }: { product: any }) => {
   if (!product) return null;
 
+  const handleAddToCart = () => {
+    const cartItems = JSON.parse(localStorage.getItem("cart") || "[]");
+    const existingItemIndex = cartItems.findIndex(
+      (item) => item.productId === product.productId
+    );
+
+    if (existingItemIndex >= 0) {
+      cartItems[existingItemIndex].quantity += 1;
+    } else {
+      cartItems.push({
+        ...product,
+        quantity: 1,
+      });
+    }
+
+    localStorage.setItem("cart", JSON.stringify(cartItems));
+  };
+
   return (
     <aside className="text-left max-w-[548px] flex-1">
       <div className="gap-[16px] flex flex-col">
@@ -91,7 +109,7 @@ const ProductInfo = ({ product }: { product: any }) => {
       <p className="mt-[32px] text-lg">{product.description}</p>
       <p className="mt-[16px] text-lg">Room: {product.room.join(", ")}</p>
       <div className="mt-[64px]">
-        <MainButton name="ADD TO CART" />
+        <MainButton name="ADD TO CART" onClick={handleAddToCart} />
       </div>
     </aside>
   );

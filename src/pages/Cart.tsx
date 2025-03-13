@@ -1,36 +1,27 @@
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { MainButton } from "../components/MainButton";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const Cart = () => {
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      name: "Product Name",
-      price: 9999,
-      room: "ROOM",
-      color: "COLOUR",
-      quantity: 1,
-    },
-    {
-      id: 2,
-      name: "Product Name",
-      price: 9999,
-      room: "ROOM",
-      color: "COLOUR",
-      quantity: 1,
-    },
-  ]);
+  const [cartItems, setCartItems] = useState([]);
+
+  useEffect(() => {
+    const items = JSON.parse(localStorage.getItem("cart") || "[]");
+    setCartItems(items);
+  }, []);
 
   const updateQuantity = (id, delta) => {
-    setCartItems(
-      cartItems.map((item) =>
-        item.id === id
+    const updatedItems = cartItems
+      .map((item) =>
+        item.productId === id
           ? { ...item, quantity: Math.max(0, item.quantity + delta) }
           : item
       )
-    );
+      .filter((item) => item.quantity > 0);
+
+    setCartItems(updatedItems);
+    localStorage.setItem("cart", JSON.stringify(updatedItems));
   };
 
   return (
@@ -60,11 +51,19 @@ const CartItems = ({ item, updateQuantity }) => {
     <>
       <ul className="flex gap-[32px] w-full uppercase text-left">
         <li>
-          <div className="bg-red-500 min-w-[450px] aspect-square"></div>
+          <div className="bg-red-500 min-w-[450px] aspect-square">
+            {item.images && item.images[0] && (
+              <img
+                src={item.images[0]}
+                alt={item.name}
+                className="w-full h-full object-cover"
+              />
+            )}
+          </div>
         </li>
         <li className="w-full">
           <h1 className="text-4xl text-(--secondary) mb-[16px]">{item.name}</h1>
-          <h2 className="text-4xl font-[500] mb-[64px]">£{item.price}</h2>
+          <h2 className="text-4xl font-[500] mb-[64px]">£{item.cost}</h2>
           <div className="text-2xl flex justify-between mb-[8px]">
             <h4>ROOM:</h4>
             <h4>{item.room}</h4>
@@ -76,7 +75,7 @@ const CartItems = ({ item, updateQuantity }) => {
           <div className="flex justify-between mt-[64px] text-3xl items-center max-w-[200px]">
             <button
               className="border p-[8px]"
-              onClick={() => updateQuantity(item.id, -1)}
+              onClick={() => updateQuantity(item.productId, -1)}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -96,12 +95,12 @@ const CartItems = ({ item, updateQuantity }) => {
             <h3>{item.quantity}</h3>
             <button
               className="border p-[8px]"
-              onClick={() => updateQuantity(item.id, 1)}
+              onClick={() => updateQuantity(item.productId, 1)}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
-                viewBox="0 0 24 24"
+                viewBox="0 24 24"
                 stroke="currentColor"
                 className="w-6 h-6"
               >
@@ -122,10 +121,10 @@ const CartItems = ({ item, updateQuantity }) => {
 
 const CartSummary = ({ cartItems }) => {
   const subtotal = cartItems.reduce(
-    (acc, item) => acc + item.price * item.quantity,
+    (acc, item) => acc + item.cost * item.quantity,
     0
   );
-  const shipping = 999; // Example shipping cost
+  const shipping = 20; // Example shipping cost
   const total = subtotal + shipping;
 
   return (
