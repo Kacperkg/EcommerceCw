@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom"; // Add useNavigate 
 import { useEffect, useState } from "react";
 import { getAllProducts } from "../firebase/fetches";
 import { Product } from "../types/DatabaseTypes";
+import { matrixFactorization } from "../utils/matrixFactorization";
 
 export default function ItemPreview() {
   return (
@@ -119,18 +120,34 @@ const MightLike = () => {
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const location = useLocation();
   const product = location.state?.product;
-  const navigate = useNavigate(); // Add useNavigate hook
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchRelatedProducts = async () => {
       try {
         const productsData = await getAllProducts();
+
+        // Simulate some ratings (in a real app, these would come from your database)
+        const mockRatings = [
+          { userId: "user1", productId: product.productId, rating: 5 },
+          // Add more ratings here
+        ];
+
+        // Initialize matrix factorization
+        const mf = matrixFactorization(mockRatings);
+
+        // Get similar product IDs
+        const similarProductIds = mf.getSimilarProducts(product.productId);
+
+        // Filter products based on similar IDs and room similarity
         const filteredProducts = productsData.filter(
           (p) =>
-            p.room?.some((r) => product.room.includes(r.toLowerCase())) &&
+            (similarProductIds.includes(p.productId) ||
+              p.room?.some((r) => product.room.includes(r.toLowerCase()))) &&
             p.productId !== product.productId
         );
-        setRelatedProducts(filteredProducts);
+
+        setRelatedProducts(filteredProducts.slice(0, 4)); // Limit to 4 products
       } catch (error) {
         console.error("Error fetching related products:", error);
       }
@@ -149,7 +166,7 @@ const MightLike = () => {
           relatedProducts.map((relatedProduct) => (
             <div
               key={relatedProduct.productId}
-              className="flex-1 max-w-[225px] bg-red-500 aspect-square cursor-pointer"
+              className="flex-1 max-w-[225px] aspect-square cursor-pointer"
               onClick={() =>
                 navigate(`/item-preview`, {
                   state: { product: relatedProduct },
