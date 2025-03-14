@@ -51,7 +51,7 @@ const CartItems = ({ item, updateQuantity }) => {
     <>
       <ul className="flex gap-[32px] w-full uppercase text-left">
         <li>
-          <div className="bg-red-500 min-w-[450px] aspect-square">
+          <div className="min-w-[450px] aspect-square">
             {item.images && item.images[0] && (
               <img
                 src={item.images[0]}
