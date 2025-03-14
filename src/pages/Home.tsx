@@ -47,6 +47,14 @@ const Home = () => {
 const Hero = () => {
   const [index, setIndex] = useState(0);
 
+  // Preload images
+  useEffect(() => {
+    slides.forEach((slide) => {
+      const img = new Image();
+      img.src = slide.image;
+    });
+  }, []);
+
   useEffect(() => {
     const interval = setInterval(() => {
       setIndex((prevIndex) => (prevIndex + 1) % slides.length);
@@ -58,7 +66,7 @@ const Hero = () => {
   return (
     <div className="relative h-[90dvh] w-full overflow-hidden">
       <div
-        className="absolute inset-0 bg-cover bg-center bg-fixed"
+        className="absolute inset-0 bg-cover bg-center will-change-transform"
         style={{
           backgroundImage: `url(${
             slides[(index + 1) % slides.length]?.image || slides[0].image
@@ -69,14 +77,14 @@ const Hero = () => {
       <AnimatePresence>
         <motion.div
           key={index}
-          className="absolute inset-0 overflow-hidden"
-          initial={{ width: "100%" }}
-          animate={{ width: "0%" }}
-          exit={{ width: "0%" }}
+          className="absolute inset-0 overflow-hidden will-change-transform"
+          initial={{ transform: "translateX(0%)" }}
+          animate={{ transform: "translateX(-100%)" }}
+          exit={{ transform: "translateX(-100%)" }}
           transition={{ ease: "easeInOut", duration: 0.5, delay: 4 }}
         >
           <div
-            className="absolute inset-0 bg-cover bg-center bg-fixed"
+            className="absolute inset-0 bg-cover bg-center will-change-transform"
             style={{ backgroundImage: `url(${slides[index].image})` }}
           />
           <motion.div
@@ -97,7 +105,7 @@ const Hero = () => {
             <div className="relative w-fit h-fit text-9xl overflow-hidden pb-[16px]">
               <motion.h1
                 className="absolute"
-                initial={{ opacity: 0, y: '100%' }}
+                initial={{ opacity: 0, y: "100%" }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0 }}
               >
