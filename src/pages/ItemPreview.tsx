@@ -104,7 +104,23 @@ const ProductInfo = ({ product }: { product: any }) => {
             />
           </svg>
         </div>
-        <div>Ratings</div>
+        <div className="flex">
+          {[1, 2, 3, 4, 5].map((star) => (
+            <svg
+              key={star}
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill={star <= (product.rating || 0) ? "#FFD700" : "none"}
+              stroke="#FFD700"
+              strokeWidth="2"
+            >
+              <path d="M12 2l2.4 7.4h7.6l-6 4.4 2.3 7.2-6.3-4.6-6.3 4.6 2.3-7.2-6-4.4h7.6z" />
+            </svg>
+          ))}
+          <span className="ml-2 text-gray-600">({product.rating || 0}/5)</span>
+        </div>
       </div>
       <h1 className="mt-[32px] text-4xl">£ {product.cost}</h1>
       <p className="mt-[32px] text-lg">{product.description}</p>
@@ -127,27 +143,33 @@ const MightLike = () => {
       try {
         const productsData = await getAllProducts();
 
-        // Simulate some ratings (in a real app, these would come from your database)
-        const mockRatings = [
-          { userId: "user1", productId: product.productId, rating: 5 },
-          // Add more ratings here
-        ];
+        // Calculate relevance score for each product
+        const productsWithScores = productsData
+          .filter((p) => p.productId !== product.productId) // Exclude current product
+          .map((p) => {
+            let score = 0;
 
-        // Initialize matrix factorization
-        const mf = matrixFactorization(mockRatings);
+            // Room similarity (up to 5 points)
+            const commonRooms =
+              p.room?.filter((r) => product.room.includes(r.toLowerCase()))
+                .length || 0;
+            score += commonRooms * 5;
 
-        // Get similar product IDs
-        const similarProductIds = mf.getSimilarProducts(product.productId);
+            // Rating similarity (up to 5 points)
+            const ratingDiff = Math.abs(
+              (p.rating || 0) - (product.rating || 0)
+            );
+            score += 5 - ratingDiff;
 
-        // Filter products based on similar IDs and room similarity
-        const filteredProducts = productsData.filter(
-          (p) =>
-            (similarProductIds.includes(p.productId) ||
-              p.room?.some((r) => product.room.includes(r.toLowerCase()))) &&
-            p.productId !== product.productId
-        );
+            return { ...p, relevanceScore: score };
+          });
 
-        setRelatedProducts(filteredProducts.slice(0, 4)); // Limit to 4 products
+        // Sort by relevance score and take top 4
+        const filteredProducts = productsWithScores
+          .sort((a, b) => b.relevanceScore - a.relevanceScore)
+          .slice(0, 4);
+
+        setRelatedProducts(filteredProducts);
       } catch (error) {
         console.error("Error fetching related products:", error);
       }
