@@ -35,7 +35,6 @@ const Home = () => {
         <div>
           <AboutUs />
           <Discover />
-          <Categories />
           <Footer />
         </div>
       </section>
