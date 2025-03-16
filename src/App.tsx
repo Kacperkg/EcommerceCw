@@ -6,6 +6,7 @@ import Explore from "./pages/Explore.tsx";
 import About from "./pages/About.tsx";
 import ItemPreview from "./pages/ItemPreview.tsx";
 import Cart from "./pages/Cart.tsx";
+import Account from "./pages/Account.tsx";
 import { Lenis } from "@studio-freight/react-lenis";
 import { MdExpandMore } from "react-icons/md";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -20,6 +21,7 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/item-preview" element={<ItemPreview />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/account" element={<Account />} />
         </Routes>
       </Lenis>
     </Router>
