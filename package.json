@@ -12,7 +12,7 @@
   "dependencies": {
     "@studio-freight/react-lenis": "^0.0.47",
     "@tailwindcss/vite": "^4.0.7",
-    "firebase": "^11.3.1",
+    "firebase": "^11.4.0",
     "framer-motion": "^12.4.7",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

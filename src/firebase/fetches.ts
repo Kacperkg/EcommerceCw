@@ -5,6 +5,7 @@ import {
   getDoc,
   setDoc,
   collection,
+  updateDoc,
   getDocs,
 } from "firebase/firestore";
 
@@ -35,7 +36,8 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-
+export {doc, getDoc, setDoc, updateDoc}
+export {db}
 /** Firestore CRUD Operations **/
 
 // Get User by ID
