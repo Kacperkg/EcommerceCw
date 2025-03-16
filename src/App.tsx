@@ -10,6 +10,8 @@ import Account from "./pages/Account.tsx";
 import { Lenis } from "@studio-freight/react-lenis";
 import { MdExpandMore } from "react-icons/md";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import LoginForm from "./components/LoginForm.tsx";
+import SignUpForm from "./components/SignUpForm.tsx";
 
 function App() {
   return (
