@@ -32,7 +32,7 @@ export default function Navbar() {
           </Link>
         </li>
         <li className="py-[16px]">
-          <a href="" className="border-l py-[16px] px-[32px]">
+          <a href="/account" className="border-l py-[16px] px-[32px]">
             Account
           </a>
         </li>
