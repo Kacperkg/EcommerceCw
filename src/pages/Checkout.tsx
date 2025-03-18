@@ -21,14 +21,25 @@ const Checkout = () => {
   const [userLoyaltyPoints, setUserLoyaltyPoints] = useState(0);
   const [usePoints, setUsePoints] = useState(false);
   const [pointsToUse, setPointsToUse] = useState(0);
+  const [deliveryAddress, setDeliveryAddress] = useState({
+    fullName: "",
+    addressLine1: "",
+    addressLine2: "",
+    city: "",
+    postcode: "",
+    specialInstructions: "",
+  });
+  const [savedAddresses, setSavedAddresses] = useState([]);
+  const [selectedAddressIndex, setSelectedAddressIndex] = useState(-1); // -1 means new address
+  const [saveAddress, setSaveAddress] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     const items = JSON.parse(localStorage.getItem("cart") || "[]");
     setCartItems(items);
 
-    // Fetch user's current loyalty points
-    const fetchUserPoints = async () => {
+    // Fetch user's current loyalty points and saved addresses
+    const fetchUserData = async () => {
       const userId = localStorage.getItem("USER_ID");
       if (userId) {
         try {
@@ -36,14 +47,25 @@ const Checkout = () => {
           if (userDoc.exists()) {
             const userData = userDoc.data();
             setUserLoyaltyPoints(userData.loyaltyPoints || 0);
+
+            // Load saved addresses if they exist
+            if (
+              userData.deliveryAddresses &&
+              userData.deliveryAddresses.length > 0
+            ) {
+              setSavedAddresses(userData.deliveryAddresses);
+              // Set the last used address as default
+              setSelectedAddressIndex(0);
+              setDeliveryAddress(userData.deliveryAddresses[0]);
+            }
           }
         } catch (error) {
-          console.error("Error fetching user points:", error);
+          console.error("Error fetching user data:", error);
         }
       }
     };
 
-    fetchUserPoints();
+    fetchUserData();
   }, []);
 
   const subtotal = cartItems.reduce(
@@ -69,8 +91,51 @@ const Checkout = () => {
     setPointsToUse(usePoints ? 0 : pointsUsed);
   };
 
+  const handleAddressChange = (e) => {
+    const { name, value } = e.target;
+    setDeliveryAddress((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    // If user modifies address, they're no longer using a saved one
+    if (selectedAddressIndex !== -1) {
+      setSelectedAddressIndex(-1);
+    }
+  };
+
+  const handleSavedAddressSelect = (index) => {
+    if (index === -1) {
+      // New address selected
+      setDeliveryAddress({
+        fullName: "",
+        addressLine1: "",
+        addressLine2: "",
+        city: "",
+        postcode: "",
+        specialInstructions: "",
+      });
+    } else {
+      // Saved address selected
+      setDeliveryAddress(savedAddresses[index]);
+    }
+    setSelectedAddressIndex(index);
+  };
+
   const handleCheckout = async () => {
     const userId = localStorage.getItem("USER_ID");
+
+    // Check if delivery address is required and provided
+    if (
+      deliveryOption === "home" &&
+      (!deliveryAddress.fullName ||
+        !deliveryAddress.addressLine1 ||
+        !deliveryAddress.city ||
+        !deliveryAddress.postcode)
+    ) {
+      alert("Please complete all required address fields");
+      return;
+    }
 
     // Create order object
     const order = {
@@ -81,6 +146,7 @@ const Checkout = () => {
       pointsDiscount,
       total,
       deliveryOption,
+      deliveryAddress: deliveryOption === "home" ? deliveryAddress : null,
       loyaltyPoints,
       date: serverTimestamp(),
       status: "Processing",
@@ -92,7 +158,7 @@ const Checkout = () => {
         // Add order to orders collection
         await addDoc(collection(db, "users", userId, "orders"), order);
 
-        // Update user's loyalty points
+        // Update user's loyalty points and save delivery address if requested
         const userDoc = await getDoc(doc(db, "users", userId));
         if (userDoc.exists()) {
           const userData = userDoc.data();
@@ -100,9 +166,32 @@ const Checkout = () => {
           // Subtract used points and add newly earned points
           const newPoints =
             currentPoints - (usePoints ? pointsUsed : 0) + loyaltyPoints;
-          await updateDoc(doc(db, "users", userId), {
-            loyaltyPoints: newPoints,
-          });
+
+          const updateData = { loyaltyPoints: newPoints };
+
+          // Save delivery address if home delivery is selected and user wants to save it
+          if (
+            deliveryOption === "home" &&
+            saveAddress &&
+            selectedAddressIndex === -1
+          ) {
+            const existingAddresses = userData.deliveryAddresses || [];
+            // Check if address already exists (compare by addressLine1 and postcode)
+            const addressExists = existingAddresses.some(
+              (addr) =>
+                addr.addressLine1 === deliveryAddress.addressLine1 &&
+                addr.postcode === deliveryAddress.postcode
+            );
+
+            if (!addressExists) {
+              updateData.deliveryAddresses = [
+                ...existingAddresses,
+                deliveryAddress,
+              ];
+            }
+          }
+
+          await updateDoc(doc(db, "users", userId), updateData);
         }
       }
 
@@ -164,6 +253,141 @@ const Checkout = () => {
                   </label>
                 </div>
               </div>
+
+              {/* Delivery Address Form */}
+              {deliveryOption === "home" && (
+                <div className="mt-[32px] border-t pt-[32px]">
+                  <h2 className="text-3xl font-[400] mb-[32px]">
+                    Delivery Address
+                  </h2>
+
+                  {/* Saved addresses selection */}
+                  {savedAddresses.length > 0 && (
+                    <div className="mb-[24px]">
+                      <h3 className="text-xl mb-[16px]">Select an address:</h3>
+                      <div className="flex flex-col gap-[12px]">
+                        {savedAddresses.map((address, index) => (
+                          <label
+                            key={index}
+                            className="flex items-center gap-[12px] cursor-pointer"
+                          >
+                            <input
+                              type="radio"
+                              name="savedAddress"
+                              checked={selectedAddressIndex === index}
+                              onChange={() => handleSavedAddressSelect(index)}
+                              className="w-[18px] h-[18px]"
+                            />
+                            <span>
+                              {address.fullName}, {address.addressLine1},
+                              {address.addressLine2 &&
+                                ` ${address.addressLine2},`}{" "}
+                              {address.city}, {address.postcode}
+                            </span>
+                          </label>
+                        ))}
+                        <label className="flex items-center gap-[12px] cursor-pointer">
+                          <input
+                            type="radio"
+                            name="savedAddress"
+                            checked={selectedAddressIndex === -1}
+                            onChange={() => handleSavedAddressSelect(-1)}
+                            className="w-[18px] h-[18px]"
+                          />
+                          <span className="font-medium">Add a new address</span>
+                        </label>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Address form (either new or editing selected) */}
+                  {(selectedAddressIndex === -1 ||
+                    savedAddresses.length === 0) && (
+                    <div className="grid grid-cols-2 gap-[16px]">
+                      <div className="col-span-2">
+                        <label className="block mb-[8px]">Full Name *</label>
+                        <input
+                          type="text"
+                          name="fullName"
+                          value={deliveryAddress.fullName}
+                          onChange={handleAddressChange}
+                          className="border p-[12px] w-full"
+                          required
+                        />
+                      </div>
+                      <div className="col-span-2">
+                        <label className="block mb-[8px]">
+                          Address Line 1 *
+                        </label>
+                        <input
+                          type="text"
+                          name="addressLine1"
+                          value={deliveryAddress.addressLine1}
+                          onChange={handleAddressChange}
+                          className="border p-[12px] w-full"
+                          required
+                        />
+                      </div>
+                      <div className="col-span-2">
+                        <label className="block mb-[8px]">Address Line 2</label>
+                        <input
+                          type="text"
+                          name="addressLine2"
+                          value={deliveryAddress.addressLine2}
+                          onChange={handleAddressChange}
+                          className="border p-[12px] w-full"
+                        />
+                      </div>
+                      <div>
+                        <label className="block mb-[8px]">City *</label>
+                        <input
+                          type="text"
+                          name="city"
+                          value={deliveryAddress.city}
+                          onChange={handleAddressChange}
+                          className="border p-[12px] w-full"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label className="block mb-[8px]">Postcode *</label>
+                        <input
+                          type="text"
+                          name="postcode"
+                          value={deliveryAddress.postcode}
+                          onChange={handleAddressChange}
+                          className="border p-[12px] w-full"
+                          required
+                        />
+                      </div>
+                      <div className="col-span-2">
+                        <label className="block mb-[8px]">
+                          Special Instructions
+                        </label>
+                        <textarea
+                          name="specialInstructions"
+                          value={deliveryAddress.specialInstructions}
+                          onChange={handleAddressChange}
+                          className="border p-[12px] w-full"
+                          rows={3}
+                          placeholder="Any special delivery instructions..."
+                        />
+                      </div>
+                      <div className="col-span-2 mt-[8px]">
+                        <label className="flex items-center gap-[12px] cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={saveAddress}
+                            onChange={() => setSaveAddress(!saveAddress)}
+                            className="w-[18px] h-[18px]"
+                          />
+                          <span>Save this address for future orders</span>
+                        </label>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             <CheckoutSummary

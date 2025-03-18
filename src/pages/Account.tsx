@@ -318,6 +318,18 @@ const Account = () => {
                               : "Click and Collect (Free)"}
                           </p>
                         </div>
+                        <div className="mt-4 text-right">
+                          <button
+                            className="bg-[#C1B6A4] text-white py-1 px-3 text-sm rounded hover:bg-[#A19182] transition"
+                            onClick={() =>
+                              alert(
+                                "We will contact you via email to arrange a refund."
+                              )
+                            }
+                          >
+                            Request Refund
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>

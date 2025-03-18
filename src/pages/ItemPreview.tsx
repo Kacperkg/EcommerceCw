@@ -130,45 +130,127 @@ const MightLike = () => {
       try {
         const productsData = await getAllProducts();
 
-        // Calculate relevance score for each product with prioritization:
-        // 1. Room (highest priority)
-        // 2. Rating (medium priority)
-        // 3. Color (lowest priority)
-        const productsWithScores = productsData
-          .filter((p) => p.productId !== product.productId) // Exclude current product
-          .map((p) => {
-            let score = 0;
+        // Skip if there aren't enough products for meaningful recommendations
+        if (productsData.length < 5) {
+          setRelatedProducts(
+            productsData
+              .filter((p) => p.productId !== product.productId)
+              .slice(0, 4)
+          );
+          return;
+        }
 
-            // Room similarity (highest priority - up to 50 points)
-            const commonRooms =
-              p.room?.filter((r) => product.room.includes(r.toLowerCase()))
-                .length || 0;
-            score += commonRooms * 50;
+        // Create a features matrix based on product attributes
+        const productIds = productsData.map((p) => p.productId);
+        const productsMap = Object.fromEntries(
+          productsData.map((p) => [p.productId, p])
+        );
 
-            // Rating similarity (medium priority - up to 20 points)
-            const ratingDiff = Math.abs(
-              (p.rating || 0) - (product.rating || 0)
-            );
-            score += (5 - ratingDiff) * 4; // Max 20 points
+        // Create matrix with features (room compatibility, rating similarity, color match)
+        const matrix: number[][] = [];
 
-            // Color similarity (lowest priority - up to 10 points)
-            if (p.color && product.color) {
-              if (p.color.toLowerCase() === product.color.toLowerCase()) {
-                score += 10;
+        // For each product pair, calculate similarity score
+        for (let i = 0; i < productIds.length; i++) {
+          matrix[i] = [];
+          const product1 = productsMap[productIds[i]];
+
+          for (let j = 0; j < productIds.length; j++) {
+            if (i === j) {
+              matrix[i][j] = 1; // Product is perfectly similar to itself
+              continue;
+            }
+
+            const product2 = productsMap[productIds[j]];
+            let similarity = 0;
+
+            // Room similarity (0.5 weight)
+            if (product1.room && product2.room) {
+              const commonRooms = product1.room.filter((r) =>
+                product2.room.some((r2) => r2.toLowerCase() === r.toLowerCase())
+              ).length;
+              const totalRooms = new Set([...product1.room, ...product2.room])
+                .size;
+              similarity += 0.5 * (commonRooms / Math.max(1, totalRooms));
+            }
+
+            // Rating similarity (0.3 weight)
+            if (
+              product1.rating !== undefined &&
+              product2.rating !== undefined
+            ) {
+              const ratingDiff =
+                1 - Math.abs(product1.rating - product2.rating) / 5;
+              similarity += 0.3 * ratingDiff;
+            }
+
+            // Color similarity (0.2 weight)
+            if (product1.color && product2.color) {
+              if (
+                product1.color.toLowerCase() === product2.color.toLowerCase()
+              ) {
+                similarity += 0.2;
               }
             }
 
-            return { ...p, relevanceScore: score };
-          });
+            matrix[i][j] = similarity;
+          }
+        }
 
-        // Sort by relevance score and take top 4
-        const filteredProducts = productsWithScores
-          .sort((a, b) => b.relevanceScore - a.relevanceScore)
-          .slice(0, 4);
+        // Apply matrix factorization
+        const { P, Q } = matrixFactorization(matrix, 2, 100, 0.01, 0.01);
 
-        setRelatedProducts(filteredProducts);
+        // Get the index of the current product
+        const productIndex = productIds.findIndex(
+          (id) => id === product.productId
+        );
+        if (productIndex === -1) {
+          setRelatedProducts([]);
+          return;
+        }
+
+        // Calculate similarity scores with the current product for all products
+        const currentProductFeatures = P[productIndex];
+        const similarities = productIds.map((id, index) => {
+          // Skip comparing with itself
+          if (id === product.productId) return { id, score: -1 };
+
+          // Calculate cosine similarity between product vectors
+          const dotProduct = Q[index].reduce(
+            (sum, val, i) => sum + val * currentProductFeatures[i],
+            0
+          );
+          const magnitude1 = Math.sqrt(
+            currentProductFeatures.reduce((sum, val) => sum + val * val, 0)
+          );
+          const magnitude2 = Math.sqrt(
+            Q[index].reduce((sum, val) => sum + val * val, 0)
+          );
+          const similarity =
+            magnitude1 && magnitude2
+              ? dotProduct / (magnitude1 * magnitude2)
+              : 0;
+
+          return { id, score: similarity };
+        });
+
+        // Sort by similarity and get top 4 products
+        const topProductIds = similarities
+          .filter((item) => item.score >= 0) // Remove the current product
+          .sort((a, b) => b.score - a.score)
+          .slice(0, 4)
+          .map((item) => item.id);
+
+        const recommendedProducts = topProductIds.map((id) => productsMap[id]);
+        setRelatedProducts(recommendedProducts);
       } catch (error) {
         console.error("Error fetching related products:", error);
+        // Fallback to showing random products
+        const filteredProducts = product
+          ? (await getAllProducts())
+              .filter((p) => p.productId !== product.productId)
+              .slice(0, 4)
+          : [];
+        setRelatedProducts(filteredProducts);
       }
     };
 
