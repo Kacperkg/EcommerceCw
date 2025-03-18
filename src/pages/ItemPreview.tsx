@@ -130,23 +130,33 @@ const MightLike = () => {
       try {
         const productsData = await getAllProducts();
 
-        // Calculate relevance score for each product
+        // Calculate relevance score for each product with prioritization:
+        // 1. Room (highest priority)
+        // 2. Rating (medium priority)
+        // 3. Color (lowest priority)
         const productsWithScores = productsData
           .filter((p) => p.productId !== product.productId) // Exclude current product
           .map((p) => {
             let score = 0;
 
-            // Room similarity (up to 5 points)
+            // Room similarity (highest priority - up to 50 points)
             const commonRooms =
               p.room?.filter((r) => product.room.includes(r.toLowerCase()))
                 .length || 0;
-            score += commonRooms * 5;
+            score += commonRooms * 50;
 
-            // Rating similarity (up to 5 points)
+            // Rating similarity (medium priority - up to 20 points)
             const ratingDiff = Math.abs(
               (p.rating || 0) - (product.rating || 0)
             );
-            score += 5 - ratingDiff;
+            score += (5 - ratingDiff) * 4; // Max 20 points
+
+            // Color similarity (lowest priority - up to 10 points)
+            if (p.color && product.color) {
+              if (p.color.toLowerCase() === product.color.toLowerCase()) {
+                score += 10;
+              }
+            }
 
             return { ...p, relevanceScore: score };
           });
