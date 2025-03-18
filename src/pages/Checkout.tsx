@@ -3,15 +3,47 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { MainButton } from "../components/MainButton";
 import { motion } from "framer-motion";
+import { db } from "../firebase/fetches";
+import {
+  doc,
+  getDoc,
+  updateDoc,
+  addDoc,
+  collection,
+  serverTimestamp,
+} from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
 
 const Checkout = () => {
   const [cartItems, setCartItems] = useState([]);
   const [deliveryOption, setDeliveryOption] = useState("home"); // "home" or "collect"
   const [checkoutComplete, setCheckoutComplete] = useState(false);
+  const [userLoyaltyPoints, setUserLoyaltyPoints] = useState(0);
+  const [usePoints, setUsePoints] = useState(false);
+  const [pointsToUse, setPointsToUse] = useState(0);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const items = JSON.parse(localStorage.getItem("cart") || "[]");
     setCartItems(items);
+
+    // Fetch user's current loyalty points
+    const fetchUserPoints = async () => {
+      const userId = localStorage.getItem("USER_ID");
+      if (userId) {
+        try {
+          const userDoc = await getDoc(doc(db, "users", userId));
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            setUserLoyaltyPoints(userData.loyaltyPoints || 0);
+          }
+        } catch (error) {
+          console.error("Error fetching user points:", error);
+        }
+      }
+    };
+
+    fetchUserPoints();
   }, []);
 
   const subtotal = cartItems.reduce(
@@ -19,14 +51,72 @@ const Checkout = () => {
     0
   );
   const shipping = deliveryOption === "home" ? 20 : 0;
-  const total = subtotal + shipping;
+
+  // Calculate points discount (£1 for every 50 points)
+  const maxPointsValue = Math.min(
+    Math.floor(userLoyaltyPoints / 50),
+    Math.floor(subtotal + shipping)
+  );
+  const pointsDiscount = usePoints ? maxPointsValue : 0;
+  const pointsUsed = pointsDiscount * 50;
+
+  const total = subtotal + shipping - pointsDiscount;
   const loyaltyPoints = Math.floor(total);
   const pointsValue = Math.floor(loyaltyPoints / 50);
 
-  const handleCheckout = () => {
-    setCheckoutComplete(true);
-    // Clear cart after purchase
-    localStorage.setItem("cart", "[]");
+  const toggleUsePoints = () => {
+    setUsePoints(!usePoints);
+    setPointsToUse(usePoints ? 0 : pointsUsed);
+  };
+
+  const handleCheckout = async () => {
+    const userId = localStorage.getItem("USER_ID");
+
+    // Create order object
+    const order = {
+      items: cartItems,
+      subtotal,
+      shipping,
+      pointsUsed: usePoints ? pointsUsed : 0,
+      pointsDiscount,
+      total,
+      deliveryOption,
+      loyaltyPoints,
+      date: serverTimestamp(),
+      status: "Processing",
+    };
+
+    try {
+      // If user is logged in, save order to their account and update loyalty points
+      if (userId) {
+        // Add order to orders collection
+        await addDoc(collection(db, "users", userId, "orders"), order);
+
+        // Update user's loyalty points
+        const userDoc = await getDoc(doc(db, "users", userId));
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          const currentPoints = userData.loyaltyPoints || 0;
+          // Subtract used points and add newly earned points
+          const newPoints =
+            currentPoints - (usePoints ? pointsUsed : 0) + loyaltyPoints;
+          await updateDoc(doc(db, "users", userId), {
+            loyaltyPoints: newPoints,
+          });
+        }
+      }
+
+      setCheckoutComplete(true);
+      // Clear cart after purchase
+      localStorage.setItem("cart", "[]");
+    } catch (error) {
+      console.error("Error processing checkout:", error);
+      alert("There was an error processing your order. Please try again.");
+    }
+  };
+
+  const handleReturnHome = () => {
+    navigate("/");
   };
 
   return (
@@ -83,6 +173,11 @@ const Checkout = () => {
               loyaltyPoints={loyaltyPoints}
               pointsValue={pointsValue}
               onCheckout={handleCheckout}
+              userLoyaltyPoints={userLoyaltyPoints}
+              usePoints={usePoints}
+              toggleUsePoints={toggleUsePoints}
+              pointsDiscount={pointsDiscount}
+              pointsUsed={pointsUsed}
             />
           </div>
         </div>
@@ -106,7 +201,7 @@ const Checkout = () => {
               These points are worth approximately £{pointsValue.toFixed(2)} for
               your future purchases.
             </p>
-            <div className="mt-[32px]">
+            <div className="mt-[32px]" onClick={handleReturnHome}>
               <MainButton name="RETURN TO HOME" />
             </div>
           </motion.div>
@@ -153,6 +248,11 @@ const CheckoutSummary = ({
   loyaltyPoints,
   pointsValue,
   onCheckout,
+  userLoyaltyPoints,
+  usePoints,
+  toggleUsePoints,
+  pointsDiscount,
+  pointsUsed,
 }) => {
   return (
     <div className="border p-[32px] flex flex-col gap-[32px] w-[450px] h-fit sticky top-[32px]">
@@ -167,6 +267,33 @@ const CheckoutSummary = ({
         <span>Shipping</span>
         <span>£{shipping}</span>
       </div>
+
+      {userLoyaltyPoints > 0 && (
+        <div className="flex flex-col gap-[8px] border-t border-b py-[16px]">
+          <div className="flex items-center gap-[12px]">
+            <input
+              type="checkbox"
+              id="usePoints"
+              checked={usePoints}
+              onChange={toggleUsePoints}
+              className="w-[20px] h-[20px]"
+            />
+            <label htmlFor="usePoints" className="text-lg cursor-pointer">
+              Use {pointsUsed} loyalty points
+            </label>
+          </div>
+          {usePoints && (
+            <div className="flex justify-between text-xl text-green-600">
+              <span>Points discount</span>
+              <span>-£{pointsDiscount}</span>
+            </div>
+          )}
+          <p className="text-sm text-gray-500">
+            You have {userLoyaltyPoints} points available (worth £
+            {Math.floor(userLoyaltyPoints / 50)})
+          </p>
+        </div>
+      )}
 
       <div className="flex justify-between text-xl font-[500]">
         <span>Total</span>
