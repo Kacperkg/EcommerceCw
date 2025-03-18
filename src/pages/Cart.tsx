@@ -29,20 +29,36 @@ const Cart = () => {
       <div className="m-auto mt-[32px] mb-[128px]">
         <Navbar />
       </div>
-      <div className="max-w-[1440px] m-auto flex gap-[64px] justify-between">
-        <div className="flex-1 flex flex-col gap-[64px]">
-          {cartItems.map((item) => (
-            <CartItems
-              key={item.id}
-              item={item}
-              updateQuantity={updateQuantity}
-            />
-          ))}
+      {cartItems.length === 0 ? (
+        <EmptyCart />
+      ) : (
+        <div className="max-w-[1440px] m-auto flex gap-[64px] justify-between">
+          <div className="flex-1 flex flex-col gap-[64px]">
+            {cartItems.map((item) => (
+              <CartItems
+                key={item.id}
+                item={item}
+                updateQuantity={updateQuantity}
+              />
+            ))}
+          </div>
+          <CartSummary cartItems={cartItems} />
         </div>
-        <CartSummary cartItems={cartItems} />
-      </div>
+      )}
       <Footer />
     </>
+  );
+};
+
+const EmptyCart = () => {
+  return (
+    <div className="max-w-[1440px] m-auto flex flex-col items-center justify-center py-[64px] min-h-[400px]">
+      <h1 className="text-4xl mb-[32px]">YOUR CART IS EMPTY</h1>
+      <p className="text-2xl mb-[48px]">Add some products to begin shopping</p>
+      <a href="/explore">
+        <MainButton name="EXPLORE PRODUCTS" />
+      </a>
+    </div>
   );
 };
 
