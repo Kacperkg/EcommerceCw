@@ -144,7 +144,9 @@ const CartSummary = ({ cartItems }) => {
           <h2>£{total}</h2>
         </div>
         <div className="ml-auto mr-auto">
-          <MainButton name="CHECKOUT" />
+          <a href="/checkout">
+            <MainButton name="CHECKOUT" />
+          </a>
         </div>
       </div>
     </>
