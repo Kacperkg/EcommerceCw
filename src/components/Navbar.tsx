@@ -22,11 +22,6 @@ export default function Navbar() {
       </ul>
       <ul className="flex text-base items-center">
         <li className="py-[16px]">
-          <a href="" className="border-l py-[16px] px-[32px]">
-            Liked
-          </a>
-        </li>
-        <li className="py-[16px]">
           <Link to="/cart" className="border-l py-[16px] px-[32px]">
             Cart
           </Link>
