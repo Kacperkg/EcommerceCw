@@ -49,9 +49,9 @@ export default function Explore() {
               />
             </div>
             <div>
-              <Products 
-                selectedCategory={selectedCategory} 
-                scrollToProducts={scrollToProducts} 
+              <Products
+                selectedCategory={selectedCategory}
+                scrollToProducts={scrollToProducts}
               />
             </div>
           </section>
@@ -356,7 +356,6 @@ const ProductCard = ({
   product: Product;
   onClick: () => void;
 }) => {
-  const [isLiked, setIsLiked] = useState(false);
   const [isInCart, setIsInCart] = useState(false);
 
   useEffect(() => {
@@ -375,11 +374,9 @@ const ProductCard = ({
     );
 
     if (existingItemIndex >= 0) {
-
       cartItems.splice(existingItemIndex, 1);
       setIsInCart(false);
     } else {
-
       cartItems.push({
         ...product,
         quantity: 1,
@@ -402,26 +399,13 @@ const ProductCard = ({
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration:300"
         />
       </div>
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          setIsLiked(!isLiked);
-        }}
-        className="absolute top-4 right-4 p-2 bg-white rounded-full shadow-md"
-      >
-        {isLiked ? (
-          <AiFillHeart className="text-red-500" />
-        ) : (
-          <AiOutlineHeart />
-        )}
-      </button>
       <div className="mt-4 space-y-2">
         <h3 className="text-lg font-medium">{product.name}</h3>
         <div className="flex justify-between items-center">
           <span className="font-semibold">£{product.cost}</span>
-          <button 
+          <button
             className={`p-2 rounded-full transition-colors ${
-              isInCart ? 'bg-black text-white' : 'hover:bg-gray-100'
+              isInCart ? "bg-black text-white" : "hover:bg-gray-100"
             }`}
             onClick={handleAddToCart}
           >
