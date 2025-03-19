@@ -14,13 +14,22 @@ import {
 } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 
+interface CartItem {
+  productId: string;
+  name: string;
+  cost: number;
+  quantity: number;
+  images?: string[];
+  room?: string;
+  color?: string;
+}
+
 const Checkout = () => {
-  const [cartItems, setCartItems] = useState([]);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [deliveryOption, setDeliveryOption] = useState("home"); // "home" or "collect"
   const [checkoutComplete, setCheckoutComplete] = useState(false);
   const [userLoyaltyPoints, setUserLoyaltyPoints] = useState(0);
   const [usePoints, setUsePoints] = useState(false);
-  const [pointsToUse, setPointsToUse] = useState(0);
   const [deliveryAddress, setDeliveryAddress] = useState({
     fullName: "",
     addressLine1: "",
@@ -29,7 +38,9 @@ const Checkout = () => {
     postcode: "",
     specialInstructions: "",
   });
-  const [savedAddresses, setSavedAddresses] = useState([]);
+  const [savedAddresses, setSavedAddresses] = useState<
+    (typeof deliveryAddress)[]
+  >([]);
   const [selectedAddressIndex, setSelectedAddressIndex] = useState(-1); // -1 means new address
   const [saveAddress, setSaveAddress] = useState(false);
   const navigate = useNavigate();
@@ -88,10 +99,11 @@ const Checkout = () => {
 
   const toggleUsePoints = () => {
     setUsePoints(!usePoints);
-    setPointsToUse(usePoints ? 0 : pointsUsed);
   };
 
-  const handleAddressChange = (e) => {
+  const handleAddressChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setDeliveryAddress((prev) => ({
       ...prev,
@@ -104,7 +116,7 @@ const Checkout = () => {
     }
   };
 
-  const handleSavedAddressSelect = (index) => {
+  const handleSavedAddressSelect = (index: number) => {
     if (index === -1) {
       // New address selected
       setDeliveryAddress({
@@ -167,7 +179,12 @@ const Checkout = () => {
           const newPoints =
             currentPoints - (usePoints ? pointsUsed : 0) + loyaltyPoints;
 
-          const updateData = { loyaltyPoints: newPoints };
+          const updateData: {
+            loyaltyPoints: number;
+            deliveryAddresses?: (typeof deliveryAddress)[];
+          } = {
+            loyaltyPoints: newPoints,
+          };
 
           // Save delivery address if home delivery is selected and user wants to save it
           if (
@@ -178,7 +195,7 @@ const Checkout = () => {
             const existingAddresses = userData.deliveryAddresses || [];
             // Check if address already exists (compare by addressLine1 and postcode)
             const addressExists = existingAddresses.some(
-              (addr) =>
+              (addr: typeof deliveryAddress) =>
                 addr.addressLine1 === deliveryAddress.addressLine1 &&
                 addr.postcode === deliveryAddress.postcode
             );
@@ -437,7 +454,7 @@ const Checkout = () => {
   );
 };
 
-const CheckoutItem = ({ item }) => {
+const CheckoutItem = ({ item }: { item: CartItem }) => {
   return (
     <div className="flex gap-[32px] w-full border-b pb-[32px]">
       <div className="w-[150px] aspect-square">
@@ -465,6 +482,20 @@ const CheckoutItem = ({ item }) => {
   );
 };
 
+interface CheckoutSummaryProps {
+  subtotal: number;
+  shipping: number;
+  total: number;
+  loyaltyPoints: number;
+  pointsValue: number;
+  onCheckout: () => void;
+  userLoyaltyPoints: number;
+  usePoints: boolean;
+  toggleUsePoints: () => void;
+  pointsDiscount: number;
+  pointsUsed: number;
+}
+
 const CheckoutSummary = ({
   subtotal,
   shipping,
@@ -477,7 +508,7 @@ const CheckoutSummary = ({
   toggleUsePoints,
   pointsDiscount,
   pointsUsed,
-}) => {
+}: CheckoutSummaryProps) => {
   return (
     <div className="border p-[32px] flex flex-col gap-[32px] w-[450px] h-fit sticky top-[32px]">
       <h2 className="text-3xl font-[400]">ORDER SUMMARY</h2>

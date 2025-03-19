@@ -3,15 +3,25 @@ import Footer from "../components/Footer";
 import { MainButton } from "../components/MainButton";
 import { useState, useEffect } from "react";
 
+interface CartItem {
+  productId: number;
+  name: string;
+  cost: number;
+  quantity: number;
+  images?: string[];
+  room?: string;
+  color?: string;
+}
+
 const Cart = () => {
-  const [cartItems, setCartItems] = useState([]);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
   useEffect(() => {
     const items = JSON.parse(localStorage.getItem("cart") || "[]");
     setCartItems(items);
   }, []);
 
-  const updateQuantity = (id, delta) => {
+  const updateQuantity = (id: number, delta: number) => {
     const updatedItems = cartItems
       .map((item) =>
         item.productId === id
@@ -36,7 +46,7 @@ const Cart = () => {
           <div className="flex-1 flex flex-col gap-[64px]">
             {cartItems.map((item) => (
               <CartItems
-                key={item.id}
+                key={item.productId}
                 item={item}
                 updateQuantity={updateQuantity}
               />
@@ -62,7 +72,12 @@ const EmptyCart = () => {
   );
 };
 
-const CartItems = ({ item, updateQuantity }) => {
+interface CartItemsProps {
+  item: CartItem;
+  updateQuantity: (id: number, delta: number) => void;
+}
+
+const CartItems = ({ item, updateQuantity }: CartItemsProps) => {
   return (
     <>
       <ul className="flex gap-[32px] w-full uppercase text-left">
@@ -135,7 +150,7 @@ const CartItems = ({ item, updateQuantity }) => {
   );
 };
 
-const CartSummary = ({ cartItems }) => {
+const CartSummary = ({ cartItems }: { cartItems: CartItem[] }) => {
   const subtotal = cartItems.reduce(
     (acc, item) => acc + item.cost * item.quantity,
     0

@@ -1,6 +1,11 @@
 import { motion } from "framer-motion";
 
-const AnimatedButton = ({ children, href }) => {
+interface AnimatedButtonProps {
+  children: string;
+  href: string;
+}
+
+const AnimatedButton = ({ children, href }: AnimatedButtonProps) => {
   const DURATION = 0.25;
   const STAGGER = 0.025;
 

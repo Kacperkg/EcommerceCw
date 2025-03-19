@@ -4,11 +4,7 @@ import Footer from "../components/Footer";
 import { useState, useEffect, useRef } from "react";
 import { getAllProducts } from "../firebase/fetches";
 import { Product } from "../types/DatabaseTypes";
-import {
-  AiOutlineHeart,
-  AiFillHeart,
-  AiOutlineShoppingCart,
-} from "react-icons/ai";
+import { AiOutlineShoppingCart } from "react-icons/ai";
 import bench from "../assets/Explore/bench.avif";
 import whitedesk from "../assets/Explore/whitedesk.avif";
 import { useNavigate } from "react-router-dom";
@@ -29,7 +25,6 @@ const slides = [
 export default function Explore() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const productsRef = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate();
 
   const scrollToProducts = () => {
     productsRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -255,9 +250,10 @@ const Products = ({
         !selectedCategory || product.categories?.includes(selectedCategory);
       const matchesColour =
         selectedColour === "All Colours" ||
-        product.colour?.some(
-          (c) => c.toLowerCase() === selectedColour.toLowerCase()
-        );
+        (Array.isArray(product.colour) &&
+          product.colour.some(
+            (c: string) => c.toLowerCase() === selectedColour.toLowerCase()
+          ));
 
       let matchesPrice = true;
       if (selectedPrice !== "All Prices") {

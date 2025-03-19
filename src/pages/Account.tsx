@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import SignUpForm from "../components/SignUpForm";
 import LoginForm from "../components/LoginForm";
@@ -20,7 +20,24 @@ const Account = () => {
   const [showLogin, setShowLogin] = useState(false);
   const [showSignUp, setShowSignUp] = useState(false);
   const [activeTab, setActiveTab] = useState("details");
-  const [orders, setOrders] = useState([]);
+  const [orders, setOrders] = useState<
+    Array<{
+      id: string;
+      date: string;
+      status?: string;
+      total?: number;
+      loyaltyPoints?: number;
+      items?: Array<{
+        name: string;
+        room?: string;
+        color?: string;
+        cost: number;
+        quantity: number;
+        images?: string[];
+      }>;
+      deliveryOption?: string;
+    }>
+  >([]);
   const [loyaltyPoints, setLoyaltyPoints] = useState(0);
 
   useEffect(() => {
@@ -33,7 +50,20 @@ const Account = () => {
       const userDoc = await getDoc(doc(db, "users", userId));
       if (userDoc.exists()) {
         const userData = userDoc.data();
-        setUser(userData);
+        if (
+          userData &&
+          userData.fullName &&
+          userData.email &&
+          userData.password
+        ) {
+          setUser({
+            fullName: userData.fullName,
+            email: userData.email,
+            password: userData.password,
+          });
+        } else {
+          console.error("Invalid user data:", userData);
+        }
         setLoyaltyPoints(userData.loyaltyPoints || 0);
         setIsLoggedIn(true);
 
@@ -46,14 +76,29 @@ const Account = () => {
     fetchUserData();
   }, []);
 
-  const fetchOrders = async (userId) => {
+  const fetchOrders = async (userId: string) => {
     try {
       const ordersQuery = query(
         collection(db, "users", userId, "orders"),
         orderBy("date", "desc")
       );
       const querySnapshot = await getDocs(ordersQuery);
-      const ordersList = [];
+      const ordersList: Array<{
+        id: string;
+        date: string;
+        status?: string;
+        total?: number;
+        loyaltyPoints?: number;
+        items?: Array<{
+          name: string;
+          room?: string;
+          color?: string;
+          cost: number;
+          quantity: number;
+          images?: string[];
+        }>;
+        deliveryOption?: string;
+      }> = [];
       querySnapshot.forEach((doc) => {
         ordersList.push({
           id: doc.id,
@@ -82,7 +127,11 @@ const Account = () => {
     }
   };
 
-  const handleSignUp = async (newUser) => {
+  const handleSignUp = async (newUser: {
+    fullName: string;
+    email: string;
+    password: string;
+  }) => {
     // Initialize a new user with 0 loyalty points
     const userWithLoyalty = { ...newUser, loyaltyPoints: 0 };
     setUser(userWithLoyalty);
@@ -92,7 +141,11 @@ const Account = () => {
     setShowSignUp(false);
   };
 
-  const handleLogin = async (loggedInUser) => {
+  const handleLogin = async (loggedInUser: {
+    fullName: string;
+    email: string;
+    password: string;
+  }) => {
     setUser(loggedInUser);
     // Loyalty points will be fetched in the useEffect
     localStorage.setItem("USER_ID", loggedInUser.email);
@@ -280,7 +333,7 @@ const Account = () => {
                         <h4 className="font-medium border-b pb-1 mb-2">
                           Items
                         </h4>
-                        {order.items.map((item, idx) => (
+                        {order.items?.map((item, idx) => (
                           <div
                             key={idx}
                             className="flex justify-between py-2 border-b border-dotted"

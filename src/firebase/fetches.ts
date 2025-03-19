@@ -36,8 +36,8 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-export {doc, getDoc, setDoc, updateDoc}
-export {db}
+export { doc, getDoc, setDoc, updateDoc };
+export { db };
 /** Firestore CRUD Operations **/
 
 // Get User by ID
@@ -217,19 +217,6 @@ export const setCartByUserId = async (
   userId: string,
   cart: Cart
 ): Promise<void> => {
-  await setDoc(doc(db, "carts", userId), cart);
-};
-
-// Add Item to Cart
-export const addItemToCart = async (
-  userId: string,
-  product: Product
-): Promise<void> => {
-  const cartDoc = await getDoc(doc(db, "carts", userId));
-  let cart = cartDoc.exists()
-    ? (cartDoc.data() as Cart)
-    : { cartId: userId, items: [] };
-  cart.items.push(product);
   await setDoc(doc(db, "carts", userId), cart);
 };
 

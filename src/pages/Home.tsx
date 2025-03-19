@@ -233,40 +233,6 @@ const DiscoverImage = ({ image }: DiscoverImageProp) => {
   );
 };
 
-const Categories = () => {
-  const Categories = [
-    "Sofas, ",
-    "Chairs, ",
-    "Desks, ",
-    "Benches, ",
-    "Dining Tables, ",
-    "Stools and more",
-  ];
-
-  const [hoveredIndex, setHoveredIndex] = useState(null);
-
-  return (
-    <section className="mt-[256px] text-left">
-      <h3 className="text-base pb-[12px]">OUR CATEGORIES</h3>
-      <div className="flex text-5xl max-w-[50dvw] flex-wrap">
-        {Categories.map((category, index) => (
-          <div
-            key={index}
-            onMouseEnter={() => setHoveredIndex(index)}
-            onMouseLeave={() => setHoveredIndex(null)}
-            className={`transition-colors duration-300 cursor-default ${
-              hoveredIndex === null || hoveredIndex === index
-                ? "text-black"
-                : "text-(--black20)"
-            }`}
-          >
-            {category.replace(/ /g, "\u00A0")}
-          </div>
-        ))}
-      </div>
-      <div>TODO</div>
-    </section>
-  );
-};
+// Removed unused Categories component to resolve the error
 
 export default Home;
